@@ -2,12 +2,10 @@ const express = require("express");
 
 const app = express()
 
-app.get("/hello", (req, res) => {
-    res.status(200).json({mssg: "hello people"})
-});
+const router = require("./route")
+app.use("/api", router)
 
-const port = 8000;
-
+const port = 6000;
 app.listen (port, () => {
     console.log(`server is listening on port http://localhost:${port}`)
 });
