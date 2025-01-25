@@ -1,13 +1,17 @@
+import Journals from "@/components/apiCall";
+
 export default function Home() {
-    return (
+    return (  
       <main className=" min-h-screen bg-[#FBF5DD] text-[#16404D]">
+        
         <header className="flex items-center justify-center h-12 ">
           <h1>Journal</h1>
         </header>
         <div className="  w-[90%] mx-auto min-h-screen">
           <div className="flex justify-center p-16">
             <div className="h-64 w-64 flex items-center justify-center bg-gray-500">
-              Gallery
+                <Journals />
+                Gallery
             </div>
           </div>
   
