@@ -5,7 +5,7 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 
 const uri = process.env.MONGODB_URI ||  "mongodb://localhost:25172/";
 
-const option = {
+const options = {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
@@ -18,7 +18,8 @@ let client;
 const connectToMongoDB = async () => {
     if (!client){
         try {
-            client == await MongoClient.connect(uri, options);
+            client = await MongoClient.connect(uri, options);
+            console.log("connected to mongodb")
         } catch (error) {
             console.log(error);
         }
@@ -27,4 +28,4 @@ const connectToMongoDB = async () => {
 };
 
 const getConnectedClient = () => client;
-module.export = {getConnectedClient, connectToMongoDB}
+module.exports = { getConnectedClient, connectToMongoDB }
