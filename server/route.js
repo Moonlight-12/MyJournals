@@ -4,7 +4,7 @@ const router = express.Router();
 
 // GET /journal
 router.get("/journals", (req, res) => {
-  res.status(200).json({ mssg: "GET requres to /api/journal " });
+  res.status(200).json({ mssg: "GET requres to /api/journals " });
 });
 
 //POST /journal
