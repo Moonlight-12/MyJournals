@@ -1,4 +1,5 @@
 import Journals from "@/components/apiCall";
+import Link from "next/link";
 
 export default function Home() {
     return (  
@@ -18,8 +19,8 @@ export default function Home() {
           <div className="bg-[#A6CDC6] items-center rounded-lg">
             <div className="flex justify-between mt-16 px-8 h-64 items-center md:px-32 md:mt-64">
               <h1>Create Journal</h1>
-              <h1>List of Journals</h1>
-              <h1>Calendar View</h1>
+              <Link href="./listOfJournals"><h1>List of Journals</h1></Link>
+              {/* <h1>Calendar View</h1> */}
             </div>
           </div>
         </div>
