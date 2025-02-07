@@ -1,4 +1,4 @@
-import Journals from "@/components/apiCall";
+
 import Link from "next/link";
 
 export default function Home() {
@@ -11,7 +11,6 @@ export default function Home() {
         <div className="  w-[90%] mx-auto min-h-screen">
           <div className="flex justify-center p-16">
             <div className="h-64 w-64 flex items-center justify-center bg-gray-500">
-                <Journals />
                 Gallery
             </div>
           </div>
