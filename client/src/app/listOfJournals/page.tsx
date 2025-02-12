@@ -1,4 +1,4 @@
-import DisplayList from "@/components/listOfJournals";
+import DisplayList from "@/components/home/listOfJournals";
 
 export default function ListOfJournals() {
     return (
