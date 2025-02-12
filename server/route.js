@@ -12,45 +12,67 @@ const getJournalCollection = () => {
 const getUserCollection = () => {
   const client = getConnectedClient();
   const collection = client.db("journaldb").collection("users");
+  return collection;
 };
 
-//Registration
-router.post("/register", async (req, res) => {
-    const {email, password} = req.body;
-    const users = getUserCollection();
+//Signup
+router.post("/signup", async (req, res) => {
+  try {
+    const { username, email, password, createdAt } = req.body;
 
-    const existingUser = await users.findOne({email});
-    if (existingUser){
-        return res.status(400).json({error: "user already exists"});
-    }
+    const safeUsername = username || null;
 
     if (!email || !password) {
-        return res.status(400).json({ error: "Email and password are required" });
+      return res.status(400).json({ error: "Email and password are required" });
     }
 
-    const newUser = await users.insertOne({ email, password });
-    res.status(200).json({userId: newUser.insertedId});
+    const users = getUserCollection();
+
+    const existingUser = await users.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "user already exists" });
+    }
+
+    const bcrypt = require("bcryptjs");
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = await users.insertOne({
+      email,
+      password: hashedPassword,
+      username: safeUsername,
+      createdAt,
+    });
+    return res.status(200).json({
+      success: true,
+      userId: newUser.insertedId,
+      message: "User Created Successfuly",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 //authentication
-router.post("/login", async (req,res) => {
-    const { email, password } = req.body;
-    const users = getUserCollection();
+router.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+  const users = getUserCollection();
 
-    const user = await users.findOne({email, password});
+  const user = await users.findOne({ email, password });
 
-    if(!user){
-        return res.status(400).json({error: "invalid credentials"})
-    }
+  if (!user) {
+    return res.status(400).json({ error: "invalid credentials" });
+  }
 
-    res.status(200).json({userId: user._Id})
-})
+  res.status(200).json({ userId: user._Id });
+});
 
 // GET /journal
 router.get("/journals", async (req, res) => {
   const collection = getJournalCollection();
-  const userId = new ObjectId(req.query.userID);
-  const journals = await collection.find({ userId }).toArray();
+  //   const userId = new ObjectId(req.query.userID);
+  //   const journals = await collection.find({ userId }).toArray();
+  const journals = await collection.find({}).toArray();
 
   const result = journals.map((journal) => ({
     title: journal.title,
@@ -61,11 +83,12 @@ router.get("/journals", async (req, res) => {
 });
 
 //POST /journal
+//need to implement userID later
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
   const { title, content, userId } = req.body;
 
-  if (!title || !content || !userId) {
+  if (!title || !content) {
     return res
       .status(400)
       .json({ success: false, mssg: "missing required fields" });
@@ -75,20 +98,18 @@ router.post("/journals", async (req, res) => {
     const newJournal = await collection.insertOne({
       title,
       content,
-      userId: new ObjectId(String(userId)),
+      userId: String(userId),
       createdAt: new Date(),
       status: false,
     });
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        title,
-        content,
-        status: false,
-        _id: newJournal.insertedId,
-      });
+    res.status(200).json({
+      success: true,
+      title,
+      content,
+      status: false,
+      _id: newJournal.insertedId,
+    });
   } catch (error) {
     console.error("Journal creation error:", error);
     res.status(500).json({ success: false, msg: "Server error" });

@@ -9,8 +9,8 @@ const options = {
     serverApi: {
         version: ServerApiVersion.v1,
         strict: true,
-        depreciationErrors: true,
-    }
+        deprecationErrors: true,
+    }, tls: true,
 };
 
 let client;
