@@ -55,23 +55,29 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/auth/signin", async (req, res) => {
-
   const { email, password, provider } = req.body;
   const users = getUserCollection();
 
   if (provider === "github") {
-
     let user = await users.findOne({ email });
 
     if (!user) {
-      user = await users.insertOne({
+      const result = await users.insertOne({
         email,
         username: email.split("@")[0],
         createdAt: new Date(),
       });
 
+      // Fetch the newly inserted user to return the full document
+      user = await users.findOne({ _id: result.insertedId });
     }
-    return res.status(200).json(user);
+
+    return res.status(200).json({
+      id: user._id,  // ✅ Return the MongoDB `_id`
+      email: user.email,
+      username: user.username,
+      createdAt: user.createdAt,
+    });
   }
 
   if (!email || !password) {
@@ -79,14 +85,17 @@ router.post("/auth/signin", async (req, res) => {
   }
 
   const user = await users.findOne({ email });
-  console.log("🔍 Found user:", user);
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
-  console.log("✅ User authenticated:", user);
-  res.status(200).json(user);
+  res.status(200).json({
+    id: user._id,
+    email: user.email,
+    username: user.username,
+    createdAt: user.createdAt,
+  });
 });
 
 // GET /journal
@@ -120,7 +129,7 @@ router.post("/journals", async (req, res) => {
     const newJournal = await collection.insertOne({
       title,
       content,
-      userId: String(userId),
+      userId,
       createdAt: new Date(),
       status: false,
     });
@@ -129,6 +138,7 @@ router.post("/journals", async (req, res) => {
       success: true,
       title,
       content,
+      userId,
       status: false,
       _id: newJournal.insertedId,
     });
