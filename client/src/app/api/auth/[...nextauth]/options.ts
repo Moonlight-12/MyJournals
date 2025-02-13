@@ -31,21 +31,20 @@ export const options: NextAuthOptions = {
       },
 
       async authorize(credentials) {
-        console.log("📩 Received credentials:", credentials);
+        
       
         if (!credentials || !credentials.email || !credentials.password) {
           return null;
         }
       
         try {
-          console.log("📡 Sending request to backend API...");
+          
           const response = await fetch("http://localhost:4000/api/auth/signin", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(credentials),
           });
-      
-          console.log("📡 Response status:", response.status);
+  
           if (!response.ok) {
             return null;
           }
