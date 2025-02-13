@@ -68,12 +68,12 @@ router.post("/auth/signin", async (req, res) => {
         createdAt: new Date(),
       });
 
-      // Fetch the newly inserted user to return the full document
+      
       user = await users.findOne({ _id: result.insertedId });
     }
 
     return res.status(200).json({
-      id: user._id,  // ✅ Return the MongoDB `_id`
+      id: user._id,  
       email: user.email,
       username: user.username,
       createdAt: user.createdAt,
@@ -98,23 +98,35 @@ router.post("/auth/signin", async (req, res) => {
   });
 });
 
-// GET /journal
+
+//Get /journals
 router.get("/journals", async (req, res) => {
-  const collection = getJournalCollection();
-  //   const userId = new ObjectId(req.query.userID);
-  //   const journals = await collection.find({ userId }).toArray();
-  const journals = await collection.find({}).toArray();
+  try {
+    const userId = req.query.userID;
 
-  const result = journals.map((journal) => ({
-    title: journal.title,
-    content: journal.content,
-  }));
+    if (!userId) {
+      return res.status(400).json({ error: 'userID is required' });
+    }
 
-  res.status(200).json(result);
+    const collection = getJournalCollection();
+    const journals = await collection.find({ userId }).toArray();
+
+    const result = journals.map((journal) => ({
+      _id: journal._id,
+      title: journal.title,
+      content: journal.content,
+      createdAt: journal.createdAt,
+      status: journal.status
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error fetching journals:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 //POST /journal
-//need to implement userID later
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
   const { title, content, userId } = req.body;
