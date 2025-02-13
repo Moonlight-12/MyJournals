@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
 const { getConnectedClient } = require("./database");
-const { ObjectId } = require("mongodb");
+const { ObjectId } = require("mongodb/mongodb");
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -54,35 +54,40 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/auth/signin", async (req, res) => {
+app.post('/api/auth/github', async (req, res) => {
+  const { githubId, email, name } = req.body;
+  
+  // Check if user exists by githubId
+  let user = await User.findOne({ githubId });
+  
+  // Create new user if doesn't exist
+  if (!user) {
+    user = new User({ githubId, email, name });
+    await user.save();
+  }
+  
+  // Generate JWT token for backend authentication
+  const token = generateJWT(user);
+  
+  res.json({ token });
+});
 
-  const { email, password, provider } = req.body;
+router.post("/auth/signin", async (req, res) => {
+  console.log("📩 Received login request:", req.body);
+
+  const { email, password } = req.body;
   const users = getUserCollection();
 
-  if (provider === "github") {
-
-    let user = await users.findOne({ email });
-
-    if (!user) {
-      user = await users.insertOne({
-        email,
-        username: email.split("@")[0],
-        createdAt: new Date(),
-      });
-
-    }
-    return res.status(200).json(user);
-  }
-
   if (!email || !password) {
-    return res.status(400).json({ error: "Email and password required" });
+      return res.status(400).json({ error: "Email and password required" });
   }
 
   const user = await users.findOne({ email });
   console.log("🔍 Found user:", user);
 
   if (!user || !(await bcrypt.compare(password, user.password))) {
-    return res.status(401).json({ error: "Invalid credentials" });
+      console.error("❌ Invalid login for email:", email);
+      return res.status(401).json({ error: "Invalid credentials" });
   }
 
   console.log("✅ User authenticated:", user);

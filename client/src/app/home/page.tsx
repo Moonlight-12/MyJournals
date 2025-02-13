@@ -1,12 +1,20 @@
+"use client"
+
 import Link from "next/link";
 import CreateJournal from "@/components/home/createJournal";
 import GalleryView from "@/components/home/gallery";
+import Signout from "@/components/header/Signout";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
+
+  const {data:session} = useSession();
+
   return (
     <main className="min-h-screen bg-[#FBF5DD] text-[#16404D]">
       <header className="flex items-center justify-center h-12">
         <h1>Journal</h1>
+        <Signout />
       </header>
       <div className="w-[90%] mx-auto min-h-screen">
         <div className="flex justify-center p-16">

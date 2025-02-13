@@ -1,16 +1,72 @@
 import type { NextAuthOptions } from "next-auth";
-import GitHubProvider from 'next-auth/providers/github';
-import { CredentialsProvider } from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 export const options: NextAuthOptions = {
-    providers: [
-        GitHubProvider({
-            clientId: process.env.GITHUB_ID as string,
-            clientSecret: process.env.GITHUB_SECRET as string,
-        }),
+  providers: [
+    GitHubProvider({
+        clientId: process.env.GITHUB_ID as string,
+        clientSecret: process.env.GITHUB_SECRET as string,
+        // check if it works without these line of codes
+        // authorization: {
+        //   url: "https://github.com/login/oauth/authorize",
+        //   params: { scope: "read:user user:email" },
+        // },
+        // userinfo: "https://api.github.com/user",
+        // profile(profile) {
+        //   console.log("🔍 GitHub Profile:", profile);
+        //   return {
+        //     id: profile.id.toString(),
+        //     name: profile.name || profile.login,
+        //     email: profile.email,
+        //     image: profile.avatar_url,
+        //   };
+        // },
+      }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "text", placeholder: "your@email.com" },
+        password: { label: "Password", type: "password" },
+      },
 
-    ],
-    pages: {
-        signIn: "/signin"
-    }
-}
+      async authorize(credentials) {
+        console.log("📩 Received credentials:", credentials);
+      
+        if (!credentials || !credentials.email || !credentials.password) {
+          return null;
+        }
+      
+        try {
+          console.log("📡 Sending request to backend API...");
+          const response = await fetch("http://localhost:4000/api/auth/signin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials),
+          });
+      
+          console.log("📡 Response status:", response.status);
+          if (!response.ok) {
+            return null;
+          }
+      
+          const user = await response.json();
+          return user;
+        } catch (error) {
+          throw new Error("Authentication failed");
+        }
+      },
+    }),
+  ],
+  
+
+  session: {
+    strategy: "jwt",
+  },
+
+  debug: true,
+  secret: process.env.NEXTAUTH_SECRET,
+  pages: {
+    signIn: "/signin",
+  },
+};
