@@ -57,6 +57,22 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;  // Store user ID in JWT
+      }
+      return token;
+    },
+  
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id as string;  // Ensure session has user ID
+      }
+      return session;
+    },
+
+  },
   
 
   session: {

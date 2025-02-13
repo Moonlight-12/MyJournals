@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 
 interface JournalData {
   success: boolean;
@@ -8,14 +9,15 @@ interface JournalData {
 
 async function NewJournal(
   title: string,
-  content: string
+  content: string,
+  userId: string
 ): Promise<JournalData> {
   const response = await fetch("http://localhost:4000/api/journals", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ title, content }),
+    body: JSON.stringify({ title, content, userId }),
   });
 
   const data = await response.json();
@@ -31,13 +33,17 @@ export default function CreateJournal() {
   const [content, setContent] = useState("");
   const [message, setMessage] = useState("");
 
+  const { data: session } = useSession();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const data = await NewJournal(title, content);
-    if (data.success) {
-      setMessage("Journal created successfully");
-    } else {
-      setMessage("Failed to create journal");
+    if (session) {
+      const data = await NewJournal(title, content, session.user.id);
+      if (data.success) {
+        setMessage("Journal created successfully");
+      } else {
+        setMessage("Failed to create journal");
+      }
     }
   };
 
