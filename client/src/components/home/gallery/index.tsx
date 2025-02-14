@@ -5,6 +5,16 @@ import Card from "./card";
 import useMeasure from "react-use-measure";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useSession } from "next-auth/react";
+import { GetFavourite } from "./getFavourites/action"; // Import your function
+
+// Define the Journal interface
+interface Journal {
+  _id: string;
+  title: string;
+  content: string;
+  // add other fields if needed
+}
 
 export default function GalleryView() {
   const images = [
@@ -22,31 +32,47 @@ export default function GalleryView() {
   const SLOW_DURATION = 75;
 
   const [duration, setDuration] = useState(FAST_DURATION);
-
   let [ref, { width }] = useMeasure();
-
   const xTranslation = useMotionValue(0);
-
   const [mustFinish, setMustFinish] = useState(false);
   const [rerender, setRerender] = useState(false);
 
+  const { data: session } = useSession();
+  const [favorites, setFavorites] = useState<Journal[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    async function fetchFavorites() {
+      if (session?.user?.id) {
+        try {
+          // Use the GetFavourite function instead of inline fetch
+          const data: Journal[] = await GetFavourite(session.user.id);
+          setFavorites(data);
+        } catch (error) {
+          console.error("Failed to fetch favorites:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchFavorites();
+  }, [session?.user?.id]);
 
   useEffect(() => {
     let controls;
     let finalPosition = (-width / 2) - 8;
 
-    if(mustFinish){
+    if (mustFinish) {
       controls = animate(xTranslation, [xTranslation.get(), finalPosition], {
         ease: "linear",
-        duration: duration * (1-xTranslation.get()/finalPosition),
+        duration: duration * (1 - xTranslation.get() / finalPosition),
         onComplete: () => {
           setMustFinish(false);
           setRerender(!rerender);
         },
       });
-      
-    }else{
+    } else {
       controls = animate(xTranslation, [0, finalPosition], {
         ease: "linear",
         duration: duration,
@@ -56,35 +82,55 @@ export default function GalleryView() {
       });
     }
 
-    
-
     return controls?.stop;
   }, [xTranslation, width, duration, rerender]);
+
   return (
     <>
-      <div className="relative overflow-hidden w-[600px] px-0 rounded-md">
-        <motion.div
-          className="flex gap-4 w-max ml-0"
-          ref={ref}
-          style={{ x: xTranslation }}
-          onHoverStart={() => {
-            setMustFinish(true);
-            setDuration(SLOW_DURATION);
-            
-          }}
-          onHoverEnd={() => {setMustFinish(true);
-            setDuration(FAST_DURATION);}}
-        >
-          {[...images, ...images].map((item, idx) => (
-            <Card image={item} key={idx} />
-          ))}
-        </motion.div>
+      {isLoading ? (
+        <div>Loading favorites...</div>
+      ) : (
+        <div className="relative overflow-hidden w-[600px] px-0 rounded-md">
+          <motion.div
+            className="flex gap-4 w-max ml-0"
+            ref={ref}
+            style={{ x: xTranslation }}
+            onHoverStart={() => {
+              setMustFinish(true);
+              setDuration(SLOW_DURATION);
+            }}
+            onHoverEnd={() => {
+              setMustFinish(true);
+              setDuration(FAST_DURATION);
+            }}
+          >
+            {[...favorites, ...favorites].map((journal, idx) => {
+              let imageIndex;
+              if (favorites.length === 1) {
+                // If only one favorite, always use the first image
+                imageIndex = 0;
+              } else {
+                // Otherwise, use the index to cycle through images
+                imageIndex = idx % images.length;
+              }
+              return (
+                <Card
+                  key={`${journal._id}-${idx}`}
+                  image={images[imageIndex]} // Use calculated image index
+                  title={journal.title}
+                  content={journal.content}
+                  id={journal._id}
+                />
+              );
+            })}
+          </motion.div>
 
-        {/* Left fade overlay: fades from white to transparent. Adjust color as needed. */}
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 opacity-70" />
-        {/* Right fade overlay: fades from white to transparent. Adjust color as needed. */}
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 opacity-70 " />
-      </div>
+          {/* Left fade overlay */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 opacity-70" />
+          {/* Right fade overlay */}
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 opacity-70" />
+        </div>
+      )}
     </>
   );
 }
