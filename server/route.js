@@ -21,6 +21,7 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password, createdAt } = req.body;
 
+    //Because username is not compulsory
     const safeUsername = username || null;
 
     if (!email || !password) {
@@ -155,7 +156,7 @@ router.post("/journals", async (req, res) => {
       userId,
       createdAt: new Date(),
       status: false,
-      isFavourite: true,
+      isFavourite: false,
     });
 
     res.status(200).json({
@@ -164,7 +165,7 @@ router.post("/journals", async (req, res) => {
       content,
       userId,
       status: false,
-      isFavourite: true,
+      isFavourite: false,
       _id: newJournal.insertedId,
     });
   } catch (error) {

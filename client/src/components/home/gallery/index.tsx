@@ -3,33 +3,26 @@
 import { animate, useMotionValue } from "framer-motion";
 import Card from "./card";
 import useMeasure from "react-use-measure";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react"; // Import useRef
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { GetFavourite } from "./getFavourites/action"; // Import your function
+import { GetFavourite } from "./get-favourites/action";
 
-// Define the Journal interface
 interface Journal {
   _id: string;
   title: string;
   content: string;
-  // add other fields if needed
 }
 
 export default function GalleryView() {
   const images = [
-    "/image1.jpg",
-    "/image2.jpg",
-    "/image3.jpg",
-    "/image4.jpg",
-    "/image5.jpg",
-    "/image6.jpg",
-    "/image7.jpg",
-    "/image8.jpg",
+    "/image11.jpg",
+    "/image10.jpg",
+    "/image9.jpg",
   ];
 
-  const FAST_DURATION = 25;
-  const SLOW_DURATION = 75;
+  const FAST_DURATION = 15;
+  const SLOW_DURATION = 10000000;
 
   const [duration, setDuration] = useState(FAST_DURATION);
   let [ref, { width }] = useMeasure();
@@ -41,11 +34,12 @@ export default function GalleryView() {
   const [favorites, setFavorites] = useState<Journal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const animationEnabled = favorites.length > 2; // Determine if animation should be enabled
+
   useEffect(() => {
     async function fetchFavorites() {
       if (session?.user?.id) {
         try {
-          // Use the GetFavourite function instead of inline fetch
           const data: Journal[] = await GetFavourite(session.user.id);
           setFavorites(data);
         } catch (error) {
@@ -55,11 +49,15 @@ export default function GalleryView() {
         }
       }
     }
-
     fetchFavorites();
   }, [session?.user?.id]);
 
   useEffect(() => {
+    if (!animationEnabled) {
+      // If animation is not enabled, don't set up animation
+      return;
+    }
+
     let controls;
     let finalPosition = (-width / 2) - 8;
 
@@ -83,52 +81,77 @@ export default function GalleryView() {
     }
 
     return controls?.stop;
-  }, [xTranslation, width, duration, rerender]);
+  }, [xTranslation, width, duration, rerender, animationEnabled]); // animationEnabled dependency added
 
   return (
     <>
       {isLoading ? (
         <div>Loading favorites...</div>
       ) : (
-        <div className="relative overflow-hidden w-[600px] px-0 rounded-md">
-          <motion.div
-            className="flex gap-4 w-max ml-0"
-            ref={ref}
-            style={{ x: xTranslation }}
-            onHoverStart={() => {
-              setMustFinish(true);
-              setDuration(SLOW_DURATION);
-            }}
-            onHoverEnd={() => {
-              setMustFinish(true);
-              setDuration(FAST_DURATION);
-            }}
-          >
-            {[...favorites, ...favorites].map((journal, idx) => {
-              let imageIndex;
-              if (favorites.length === 1) {
-                // If only one favorite, always use the first image
-                imageIndex = 0;
-              } else {
-                // Otherwise, use the index to cycle through images
-                imageIndex = idx % images.length;
-              }
-              return (
-                <Card
-                  key={`${journal._id}-${idx}`}
-                  image={images[imageIndex]} // Use calculated image index
-                  title={journal.title}
-                  content={journal.content}
-                  id={journal._id}
-                />
-              );
-            })}
-          </motion.div>
+        <div className="relative overflow-hidden w-full px-0 rounded-md">
+          {animationEnabled ? ( // Conditional rendering for animation
+            <motion.div
+              className="flex gap-4 w-max ml-0"
+              ref={ref}
+              style={{ x: xTranslation }}
+              onHoverStart={() => {
+                setMustFinish(true);
+                setDuration(SLOW_DURATION);
+              }}
+              onHoverEnd={() => {
+                setMustFinish(true);
+                setDuration(FAST_DURATION);
+              }}
+            >
+              {[...favorites, ...favorites].map((journal, idx) => {
+                let imageIndex;
+                if (favorites.length === 1) {
+                  imageIndex = 0;
+                } else {
+                  imageIndex = idx % images.length;
+                }
+                return (
+                  <Card
+                    key={`${journal._id}-${idx}`}
+                    image={images[imageIndex]}
+                    title={journal.title}
+                    content={journal.content}
+                    id={journal._id}
+                  />
+                );
+              })}
+            </motion.div>
+          ) : (
+            // Static display when animation is disabled
+            <div className="flex gap-4 w-max ml-5">
+              {favorites.map((journal, idx) => {
+                let imageIndex;
+                if (favorites.length === 1) {
+                  imageIndex = 0;
+                } else {
+                  imageIndex = idx % images.length;
+                }
+                return (
+                  <Card
+                    key={`${journal._id}-${idx}`}
+                    image={images[imageIndex]}
+                    title={journal.title}
+                    content={journal.content}
+                    id={journal._id}
+                  />
+                );
+              })}
+            </div>
+          )}
 
-          {/* Left fade overlay */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 opacity-70" />
-          {/* Right fade overlay */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 opacity-70" />
+          {animationEnabled && ( // Conditionally render fades only when animation is enabled
+            <>
+              {/* Left fade overlay */}
+              <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 opacity-70" />
+              {/* Right fade overlay */}
+              <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 opacity-70" />
+            </>
+          )}
         </div>
       )}
     </>

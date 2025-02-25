@@ -1,4 +1,4 @@
-import ShowJournals from "@/components/home/showOwnJournal";
+import ShowJournals from "@/components/journal-page";
 
 export default function ListOfJournals() {
     return (

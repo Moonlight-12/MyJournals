@@ -23,3 +23,9 @@ body {
 input {
   @apply w-[400px] border border-gray-200 py-2 px-6 bg-[#9ACBD0]/40
 }
+
+.dark {
+  --background: #0a0a0a; 
+  --foreground: #ededed;
+  --button-background-dark: #202020; 
+}

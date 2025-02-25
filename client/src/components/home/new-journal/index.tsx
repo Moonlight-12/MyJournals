@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
+import { Plus } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Import Shadcn UI Button
 
 interface JournalData {
   success: boolean;
@@ -21,9 +23,7 @@ async function NewJournal(
   });
 
   const data = await response.json();
-
   console.log("Server response:", data);
-
   return data;
 }
 
@@ -49,19 +49,29 @@ export default function CreateJournal() {
 
   return (
     <>
-      <div
-        className="hidden md:flex w-52 h-52 p-6 rounded-lg bg-gray-400 shadow-sm items-center justify-center"
+      <Button
+        variant="outline"
+        className="hidden md:flex w-52 h-52 p-6 rounded-lg shadow-sm items-center justify-center relative"
         onClick={() => setDisplayPage(true)}
       >
-        <h1>Create Journal</h1>
-      </div>
+        <div className="border rounded-full p-1 bg-white">
+          <Plus className="h-6 w-6 text-gray-500" />
+        </div>
 
-      <div
-        className="flex md:hidden flex-1 rounded-full h-24 bg-gray-400 shadow-sm hover:shadow-sm items-center justify-center"
+        <span>Create Journal</span>
+      </Button>
+
+      <Button
+        variant="outline" // Using 'outline' variant for mobile too
+        className="flex md:hidden w-32 rounded-md h-32 shadow-sm hover:shadow-sm items-center justify-center relative"
         onClick={() => setDisplayPage(true)}
       >
-        CreateJournal
-      </div>
+        <div className="border rounded-full p-1 bg-white">
+          <Plus className="h-4 w-4 text-gray-500" />
+        </div>
+
+        <span className="text-wrap">Create Journal</span>
+      </Button>
 
       {displayPage && (
         <div
@@ -87,7 +97,7 @@ export default function CreateJournal() {
                 </label>
                 <input
                   type="text"
-                  className="w-full rounded px-2 py-1"
+                  className="w-full rounded px-2 py-1 border" // Added border to input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
@@ -98,15 +108,20 @@ export default function CreateJournal() {
                   Content
                 </label>
                 <textarea
-                  className="w-full px-2 py-1"
+                  className="w-full px-2 py-1 border" // Added border to textarea
                   rows={10}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                 />
               </div>
-              <button className="bg-[#2973B2] px-2 rounded" type="submit">
+              <Button
+                type="submit"
+                className="bg-[#2973B2] text-white rounded px-4 py-2"
+              >
+                {" "}
+                {/* Styled Save button */}
                 Save
-              </button>
+              </Button>
             </form>
             {message && <p className="mt-4 text-center">{message}</p>}
           </div>
