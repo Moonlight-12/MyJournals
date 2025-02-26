@@ -3,7 +3,7 @@ import NextAuth, { DefaultSession, DefaultUser } from "next-auth";
 declare module "next-auth" {
     interface Session {
         user: {
-            id: string;  // Add custom user ID field
+            id: string; 
             email: string;
             name?: string;
             image?: string;
@@ -11,6 +11,6 @@ declare module "next-auth" {
     }
 
     interface User extends DefaultUser {
-        id: string;  // Ensure ID is available in the User object
+        id: string; 
     }
 }

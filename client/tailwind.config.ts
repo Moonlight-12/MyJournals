@@ -14,6 +14,9 @@ module.exports = {
         foreground: "hsl(var(--foreground))",
         buttonBackgroundDark: "hsl(var(--button-background-dark))",
       },
+      rotate: {
+        'y-180': '180deg',
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
