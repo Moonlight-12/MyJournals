@@ -102,7 +102,7 @@ router.post("/auth/signin", async (req, res) => {
 //Get /journals
 router.get("/journals", async (req, res) => {
   try {
-    const userId = req.query.userId; // Changed to lowercase 'd'
+    const userId = req.query.userId;
     const isFavourite = req.query.isFavourite;
 
     if (!userId) {
@@ -133,7 +133,7 @@ router.get("/journals", async (req, res) => {
     console.error("Error fetching journals:", error);
     res.status(500).json({
       error: "Internal server error",
-      message: error.message, // Add detailed error info
+      message: error.message,
     });
   }
 });
@@ -206,7 +206,7 @@ module.exports = router;
 
 
 //Make journal a favourite journal by Id
-router.patch("/journals/:id", async (req, res) => {
+router.patch("/favourite/:id", async (req, res) => {
   const journalId = req.params.id;
   const updates = req.body;
   const collection = getJournalCollection();
@@ -226,12 +226,11 @@ router.patch("/journals/:id", async (req, res) => {
       { $set: updates }
     );
 
-    if (result.matchedCount === 1) {  // Changed from modifiedCount to matchedCount
+    if (result.matchedCount === 1) { 
       const updatedJournal = await collection.findOne({ _id: objectId });
       res.status(200).json({ 
         message: "Journal retrieved successfully", 
         journal: updatedJournal,
-        // Add a note if no changes were needed
         unchanged: result.modifiedCount === 0
       });
     } else {
@@ -250,3 +249,26 @@ router.patch("/journals/:id", async (req, res) => {
     });
   }
 });
+
+//Get top5 recent journals
+router.get("/recents", async(req, res) => {
+  try {
+    const userId = req.query.userId;
+    const collection = getJournalCollection();
+
+    const recents = await collection.find({userId}).sort({createdAt:-1}).limit(5).toArray();
+
+    const result = recents.map((journal) => ({
+      _id: journal._id,
+      title: journal.title,
+      content: journal.content,
+      createdAt: journal.createdAt,
+      status: journal.status,
+      isFavourite: journal.isFavourite,
+    }));
+
+    return res.status(200).json(result);
+  } catch (error){
+    res.status(400).json("Invalid userId")
+  }
+})
