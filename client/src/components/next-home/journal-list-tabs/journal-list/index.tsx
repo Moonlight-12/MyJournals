@@ -100,7 +100,7 @@ export default function DisplayList() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 grid md:grid-cols-2 gap-x-4">
       {journals.map((journal) => (
         <div
           key={journal._id}
@@ -119,12 +119,12 @@ export default function DisplayList() {
           </div>
           <button
             onClick={() => handleFavoriteToggle(journal._id, journal.isFavourite)}
-            className="text-white font-bold rounded focus:outline-none focus:shadow-outline"
+            className="text-white font-bold rounded focus:outline-none focus:shadow-outline  px-2"
           >
             <img
               src={journal.isFavourite ? "/red-heart-icon.svg" : "/heart-svgrepo-com.svg"}
               alt="Favorite Icon"
-              className="h-8 w-8 fill-current"
+              className="h-8 w-8 fill-current min-w-6 md:min-w-8"
             />
           </button>
         </div>
