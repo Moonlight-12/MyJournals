@@ -6,7 +6,7 @@ import useMeasure from "react-use-measure";
 import { useEffect, useState, useRef } from "react"; // Import useRef
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
-import { GetFavourite } from "./get-favourites/action";
+import { GetFavourite } from "../../../app/api/get-favourites";
 
 interface Journal {
   _id: string;

@@ -1,0 +1,48 @@
+"use client";
+
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DisplayList from "@/components/next-home/journal-list-tabs/journal-list";
+import { FavouriteList } from "./favourite-list";
+
+export function JournalsListTabs() {
+  const [activeTab, setActiveTab] = useState("Journal list");
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setRefreshKey(prev => prev + 1);
+  };
+
+  return (
+    <Tabs 
+      defaultValue="Journal list" 
+      className="w-full"
+      onValueChange={handleTabChange}
+    >
+      <TabsList className="flex shrink-0 border rounded-md mb-8 py-6">
+        <TabsTrigger
+          value="Journal list"
+          className="data-[state=active]:bg-white rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px]"
+        >
+          Journal list
+        </TabsTrigger>
+        <TabsTrigger
+          value="Favourite Journal"
+          className="data-[state=active]:bg-white rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px]"
+        >
+          Favourite Journal
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent
+        value="Journal list"
+        className="overflow-y-auto h-[400px] md:h-[600px]"
+      >
+        <DisplayList />
+      </TabsContent>
+      <TabsContent value="Favourite Journal" className="overflow-y-auto h-[400px] md:h-[600px]">
+        <FavouriteList key={refreshKey} />
+      </TabsContent>
+    </Tabs>
+  );
+}

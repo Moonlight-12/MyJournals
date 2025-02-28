@@ -1,4 +1,4 @@
-import DisplayList from "./journal-list";
+import DisplayList from "../next-home/journal-list-tabs/journal-list";
 
 export default function ShowJournals() {
 
