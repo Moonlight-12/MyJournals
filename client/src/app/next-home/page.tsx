@@ -1,8 +1,21 @@
 import SignoutComponent from "@/components/header/Signout";
 import { JournalsListTabs } from "@/components/next-home/journal-list-tabs";
 import { RecentJournalComponent } from "@/components/next-home/recent-journal";
+import { getServerSession } from "next-auth";
+import { options } from "../api/auth/[...nextauth]/options";
+import { Button } from "@/components/ui/button";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await getServerSession(options);
+
+  if (!session?.user?.id) {
+    return (
+      <div className="flex h-[300px] items-center justify-center rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+        Please login first
+      </div>
+    );
+  }
+
   return (
     <main className="w-screen min-h-screen bg-[#FBF5DD] text-[#16404D]">
       <header className="flex items-center justify-between h-14 px-4 border-b border-gray-200 bg-white">
@@ -10,17 +23,23 @@ export default function HomePage() {
         <SignoutComponent />
       </header>
 
-      
-        <section className="max-w-screen-xl mx-auto w-full px-4">
-          <div className="space-y-4 pb-4">
-            <RecentJournalComponent />
-          </div>
+      <div className="flex flex-col items-center text-2xl p-12 w-full mt-24">
+        <h2>Welcome to your personal journal</h2>
+        <h1 className="text-3xl mb-12">Hi {session.user.name || session.user.email}</h1>
+        <Button variant="outline" className="border border-slate-300 px-6 py-4">Start Writing</Button>
+      </div>
 
-          <div className="px-4">
-            <JournalsListTabs />
-          </div>
-        </section>
       
+
+      <section className="max-w-screen-xl mx-auto w-full px-4 pb-10">
+        <div className="space-y-4 pb-4">
+          <RecentJournalComponent />
+        </div>
+
+        <div className="px-4">
+          <JournalsListTabs />
+        </div>
+      </section>
     </main>
   );
 }

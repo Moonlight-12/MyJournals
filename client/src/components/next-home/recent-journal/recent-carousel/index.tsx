@@ -19,6 +19,7 @@ export function RecentCarousel({
     <Swiper
       className=" mx-auto px-4 w-full max-w-screen-xl py-8 !pb-8"
       modules={[Scrollbar, EffectCards]}
+      grabCursor={true}
       scrollbar={{
         draggable: true,
         horizontalClass: "scrollbar-recent",
@@ -32,6 +33,7 @@ export function RecentCarousel({
         slideShadows: false,
       }}
       centeredSlides={true}
+      
     >
       {data.map((item) => (
         <SwiperSlide key={item._id} className="!flex !justify-center !items-center">
