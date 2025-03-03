@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button"; // Import Shadcn UI Button
+import { cn } from "@/utils/cn";
 
 interface JournalData {
   success: boolean;
@@ -27,7 +28,7 @@ async function NewJournal(
   return data;
 }
 
-export default function CreateJournal() {
+export default function CreateJournal({className}:{className: string}) {
   const [displayPage, setDisplayPage] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -51,7 +52,7 @@ export default function CreateJournal() {
     <>
       <Button
         variant="outline"
-        className="hidden md:flex w-52 h-52 p-6 rounded-lg shadow-sm items-center justify-center relative"
+        className={cn(className)}
         onClick={() => setDisplayPage(true)}
       >
         <div className="border rounded-full p-1 bg-white">
@@ -62,8 +63,8 @@ export default function CreateJournal() {
       </Button>
 
       <Button
-        variant="outline" // Using 'outline' variant for mobile too
-        className="flex md:hidden w-32 rounded-md h-32 shadow-sm hover:shadow-sm items-center justify-center relative"
+        variant="outline" 
+        className={cn(className)}
         onClick={() => setDisplayPage(true)}
       >
         <div className="border rounded-full p-1 bg-white">
@@ -97,7 +98,7 @@ export default function CreateJournal() {
                 </label>
                 <input
                   type="text"
-                  className="w-full rounded px-2 py-1 border" // Added border to input
+                  className="w-full rounded px-2 py-1 border"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
@@ -108,7 +109,7 @@ export default function CreateJournal() {
                   Content
                 </label>
                 <textarea
-                  className="w-full px-2 py-1 border" // Added border to textarea
+                  className="w-full px-2 py-1 border"
                   rows={10}
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
@@ -118,8 +119,6 @@ export default function CreateJournal() {
                 type="submit"
                 className="bg-[#2973B2] text-white rounded px-4 py-2"
               >
-                {" "}
-                {/* Styled Save button */}
                 Save
               </Button>
             </form>

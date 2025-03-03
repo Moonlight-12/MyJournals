@@ -6,18 +6,16 @@ import DisplayList from "@/components/next-home/journal-list-tabs/journal-list";
 import { FavouriteList } from "./favourite-list";
 
 export function JournalsListTabs() {
-  const [activeTab, setActiveTab] = useState("Journal list");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
   };
 
   return (
-    <Tabs 
-      defaultValue="Journal list" 
-      className="w-full"
+    <Tabs
+      defaultValue="Journal list"
+      className="w-full mb-10"
       onValueChange={handleTabChange}
     >
       <TabsList className="flex shrink-0 border rounded-md mb-8 py-6">
@@ -40,7 +38,10 @@ export function JournalsListTabs() {
       >
         <DisplayList />
       </TabsContent>
-      <TabsContent value="Favourite Journal" className="overflow-y-auto h-[400px] md:h-[600px]">
+      <TabsContent
+        value="Favourite Journal"
+        className="overflow-y-auto h-[400px] md:h-[600px]"
+      >
         <FavouriteList key={refreshKey} />
       </TabsContent>
     </Tabs>

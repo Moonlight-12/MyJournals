@@ -57,7 +57,7 @@ router.post("/signup", async (req, res) => {
 
 //Signin
 router.post("/auth/signin", async (req, res) => {
-  const { email, password, provider } = req.body;
+  const { name, email, password, provider } = req.body;
   const users = getUserCollection();
 
   if (provider === "github") {
@@ -66,7 +66,7 @@ router.post("/auth/signin", async (req, res) => {
     if (!user) {
       const result = await users.insertOne({
         email,
-        username: email.split("@")[0],
+        username: name,
         createdAt: new Date(),
       });
 
