@@ -55,9 +55,13 @@ export default function DisplayList() {
     journalId: string,
     currentStatus: boolean
   ) => {
-    if (!userId) return;
-
+    if (!userId || !session?.accessToken) {
+      console.error("No user ID or access token");
+      return;
+    }
+  
     try {
+      // Optimistic update
       setJournals((prevJournals) =>
         prevJournals.map((journal) =>
           journal._id === journalId
@@ -65,21 +69,31 @@ export default function DisplayList() {
             : journal
         )
       );
-
+  
       const response = await fetch(
         `http://localhost:4000/api/favourite/${journalId}`,
         {
           method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ isFavourite: !currentStatus }),
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${session.accessToken}`
+          },
+          body: JSON.stringify({ 
+            isFavourite: !currentStatus
+          }),
         }
       );
-
+  
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorBody = await response.text();
+        console.error(`Error response: ${response.status}`, errorBody);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
+  
+      const data = await response.json();
+  
     } catch (error) {
-      console.error("Failed to toggle favorite status:", error);
+      console.error("Error in handleFavoriteToggle:", error);
 
       setJournals((prevJournals) =>
         prevJournals.map((journal) =>

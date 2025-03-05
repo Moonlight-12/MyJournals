@@ -3,8 +3,8 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const { getConnectedClient } = require("./database");
 const { ObjectId } = require("mongodb");
-const jwt = require('jsonwebtoken');
-const authMiddleware = require('./authMiddleware');
+const jwt = require("jsonwebtoken");
+const authMiddleware = require("./authMiddleware");
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -65,12 +65,12 @@ router.post("/auth/signin", async (req, res) => {
   // Function to generate JWT token
   const generateToken = (user) => {
     return jwt.sign(
-      { 
-        userId: user._id.toString(), 
-        email: user.email 
-      }, 
-      process.env.JWT_SECRET, 
-      { expiresIn: '1h' }
+      {
+        userId: user._id.toString(),
+        email: user.email,
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
     );
   };
 
@@ -82,7 +82,7 @@ router.post("/auth/signin", async (req, res) => {
         email,
         username: name,
         createdAt: new Date(),
-        provider: 'github'
+        provider: "github",
       });
 
       user = await users.findOne({ _id: result.insertedId });
@@ -96,7 +96,7 @@ router.post("/auth/signin", async (req, res) => {
       email: user.email,
       username: user.username,
       createdAt: user.createdAt,
-      token // Send JWT token
+      token, // Send JWT token
     });
   }
 
@@ -118,7 +118,7 @@ router.post("/auth/signin", async (req, res) => {
     email: user.email,
     username: user.username,
     createdAt: user.createdAt,
-    token // Send JWT token
+    token, // Send JWT token
   });
 });
 
@@ -228,60 +228,67 @@ router.put("/journals/:id", async (req, res) => {
 
 module.exports = router;
 
-
 //Make journal a favourite journal by Id
 router.patch("/favourite/:id", authMiddleware, async (req, res) => {
   const journalId = req.params.id;
   const updates = req.body;
   const collection = getJournalCollection();
-  const userId = req.user.id;
+  const userId = req.user.id; // This should now be a string
 
   try {
-    const objectId = new ObjectId(journalId);
-    
-    // First check if the journal exists
-    const existingJournal = await collection.findOne({ _id: objectId });
-    
+    const existingJournal = await collection.findOne({ 
+      _id: new ObjectId(journalId), 
+      userId: userId // String comparison
+    });
+
     if (!existingJournal) {
+      
       return res.status(404).json({ error: "Journal not found" });
     }
 
     const result = await collection.updateOne(
-      { _id: objectId },
+      { 
+        _id: new ObjectId(journalId), 
+        userId: userId 
+      },
       { $set: updates }
     );
 
-    if (result.matchedCount === 1) { 
-      const updatedJournal = await collection.findOne({ _id: objectId });
-      res.status(200).json({ 
-        message: "Journal retrieved successfully", 
+    if (result.matchedCount === 1) {
+      const updatedJournal = await collection.findOne({ _id: new ObjectId(journalId) });
+      res.status(200).json({
+        message: "Journal updated successfully",
         journal: updatedJournal,
-        unchanged: result.modifiedCount === 0
+        unchanged: result.modifiedCount === 0,
       });
     } else {
-      res.status(404).json({ error: "Journal not found" });
+      res.status(404).json({ error: "Journal not found or not owned by user" });
     }
   } catch (error) {
-    if (error.message.includes('ObjectId')) {
-      return res.status(400).json({ 
-        error: "Invalid journal ID format" 
+    console.error("Full error details:", error);
+    if (error.message.includes("ObjectId")) {
+      return res.status(400).json({
+        error: "Invalid journal ID format",
       });
     }
-    console.error("Error updating journal:", error);
-    res.status(500).json({ 
-      error: "Internal server error", 
-      message: error.message 
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
     });
   }
 });
 
 //Get top5 recent journals
-router.get("/recents", async(req, res) => {
+router.get("/recents", async (req, res) => {
   try {
     const userId = req.query.userId;
     const collection = getJournalCollection();
 
-    const recents = await collection.find({userId}).sort({createdAt:-1}).limit(5).toArray();
+    const recents = await collection
+      .find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .toArray();
 
     const result = recents.map((journal) => ({
       _id: journal._id,
@@ -293,29 +300,62 @@ router.get("/recents", async(req, res) => {
     }));
 
     return res.status(200).json(result);
-  } catch (error){
-    res.status(400).json("Invalid userId")
+  } catch (error) {
+    res.status(400).json("Invalid userId");
   }
-})
+});
 
 //Soft Delete /journals/:id
-router.patch("/journal/:id", async(rep, res) => {
+router.patch("/journal/:id", authMiddleware, async (req, res) => {
   try {
     const journalId = req.params.id;
+    const userId = req.user.id; // From authMiddleware
     const collection = getJournalCollection();
 
+    // Convert string to ObjectId
+    const objectId = new ObjectId(journalId);
 
+    // Find and update the journal, ensuring it belongs to the authenticated user
+    const result = await collection.updateOne(
+      { 
+        _id: objectId, 
+        userId: userId // Ensure the journal belongs to the current user
+      },
+      { 
+        $set: { 
+          isHidden: true,
+          updatedAt: new Date() 
+        } 
+      }
+    );
 
-  }catch (error) {
+    // Check if the journal was actually updated
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ 
+        error: "Journal not found or you do not have permission to delete" 
+      });
+    }
+
+    // Fetch the updated journal to return
+    const updatedJournal = await collection.findOne({ 
+      _id: objectId 
+    });
+
+    res.status(200).json({
+      message: "Journal soft deleted successfully",
+      journal: updatedJournal
+    });
+
+  } catch (error) {
     if (error.message.includes('ObjectId')) {
       return res.status(400).json({ 
         error: "Invalid journal ID format" 
       });
     }
-    console.error("Error updating journal:", error);
+    console.error("Error soft deleting journal:", error);
     res.status(500).json({ 
       error: "Internal server error", 
       message: error.message 
     });
   }
-})
+});

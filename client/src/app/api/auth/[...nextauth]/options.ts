@@ -19,27 +19,30 @@ export const options: NextAuthOptions = {
         if (!credentials || !credentials.email || !credentials.password) {
           return null;
         }
-      
+
         try {
-          const response = await fetch("http://localhost:4000/api/auth/signin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(credentials),
-          });
-      
+          const response = await fetch(
+            "http://localhost:4000/api/auth/signin",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(credentials),
+            }
+          );
+
           if (!response.ok) {
             return null;
           }
-      
+
           const user = await response.json();
-      
+
           if (!user || !user.id) return null;
-      
+
           return {
             id: user.id,
             email: user.email,
             name: user.username,
-            token: user.token ?? null, // Use nullish coalescing
+            token: user.token ?? null,
           };
         } catch (error) {
           return null;
@@ -52,9 +55,9 @@ export const options: NextAuthOptions = {
       if (user) {
         return {
           ...token,
-          id: user.id,
+          id: String(user.id),
           username: user.name ?? null,
-          accessToken: user.token ?? null
+          accessToken: user.token ?? null,
         };
       }
       return token;
@@ -66,13 +69,13 @@ export const options: NextAuthOptions = {
           ...session,
           user: {
             ...session.user,
-            id: token.id,
-            name: token.username
+            id: String(token.id),
+            name: token.username,
           },
-          accessToken: token.accessToken ?? null
+          accessToken: token.accessToken ?? null,
         };
       }
-      
+
       return session;
     },
   },
