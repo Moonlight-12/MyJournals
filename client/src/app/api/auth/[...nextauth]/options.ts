@@ -39,9 +39,10 @@ export const options: NextAuthOptions = {
             id: user.id,
             email: user.email,
             name: user.username,
+            token: user.token ?? null, // Use nullish coalescing
           };
         } catch (error) {
-          throw new Error("Authentication failed");
+          return null;
         }
       },
     }),
@@ -49,16 +50,27 @@ export const options: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.username = user.name;
+        return {
+          ...token,
+          id: user.id,
+          username: user.name ?? null,
+          accessToken: user.token ?? null
+        };
       }
       return token;
     },
 
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.id as string;
-        session.user.name = token.username as string;
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.id,
+            name: token.username
+          },
+          accessToken: token.accessToken ?? null
+        };
       }
       
       return session;

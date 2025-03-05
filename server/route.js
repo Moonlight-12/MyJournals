@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const router = express.Router();
 const { getConnectedClient } = require("./database");
 const { ObjectId } = require("mongodb");
+const jwt = require('jsonwebtoken');
+const authMiddleware = require('./authMiddleware');
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -60,6 +62,18 @@ router.post("/auth/signin", async (req, res) => {
   const { name, email, password, provider } = req.body;
   const users = getUserCollection();
 
+  // Function to generate JWT token
+  const generateToken = (user) => {
+    return jwt.sign(
+      { 
+        userId: user._id.toString(), 
+        email: user.email 
+      }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1h' }
+    );
+  };
+
   if (provider === "github") {
     let user = await users.findOne({ email });
 
@@ -68,16 +82,21 @@ router.post("/auth/signin", async (req, res) => {
         email,
         username: name,
         createdAt: new Date(),
+        provider: 'github'
       });
 
       user = await users.findOne({ _id: result.insertedId });
     }
+
+    // Generate token for GitHub login
+    const token = generateToken(user);
 
     return res.status(200).json({
       id: user._id,
       email: user.email,
       username: user.username,
       createdAt: user.createdAt,
+      token // Send JWT token
     });
   }
 
@@ -91,11 +110,15 @@ router.post("/auth/signin", async (req, res) => {
     return res.status(401).json({ error: "Invalid credentials" });
   }
 
+  // Generate token for regular login
+  const token = generateToken(user);
+
   res.status(200).json({
     id: user._id,
     email: user.email,
     username: user.username,
     createdAt: user.createdAt,
+    token // Send JWT token
   });
 });
 
@@ -111,7 +134,7 @@ router.get("/journals", async (req, res) => {
 
     const collection = getJournalCollection();
 
-    const query = { userId };
+    const query = { userId, isHidden: false };
 
     if (isFavourite !== undefined) {
       query.isFavourite = isFavourite === "true";
@@ -157,6 +180,7 @@ router.post("/journals", async (req, res) => {
       createdAt: new Date(),
       status: false,
       isFavourite: false,
+      isHidden: false,
     });
 
     res.status(200).json({
@@ -206,10 +230,11 @@ module.exports = router;
 
 
 //Make journal a favourite journal by Id
-router.patch("/favourite/:id", async (req, res) => {
+router.patch("/favourite/:id", authMiddleware, async (req, res) => {
   const journalId = req.params.id;
   const updates = req.body;
   const collection = getJournalCollection();
+  const userId = req.user.id;
 
   try {
     const objectId = new ObjectId(journalId);
@@ -270,5 +295,27 @@ router.get("/recents", async(req, res) => {
     return res.status(200).json(result);
   } catch (error){
     res.status(400).json("Invalid userId")
+  }
+})
+
+//Soft Delete /journals/:id
+router.patch("/journal/:id", async(rep, res) => {
+  try {
+    const journalId = req.params.id;
+    const collection = getJournalCollection();
+
+
+
+  }catch (error) {
+    if (error.message.includes('ObjectId')) {
+      return res.status(400).json({ 
+        error: "Invalid journal ID format" 
+      });
+    }
+    console.error("Error updating journal:", error);
+    res.status(500).json({ 
+      error: "Internal server error", 
+      message: error.message 
+    });
   }
 })
