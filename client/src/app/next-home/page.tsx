@@ -23,7 +23,7 @@ export default async function HomePage() {
         <SignoutComponent />
       </header>
 
-      <div className="flex flex-col items-center text-2xl p-12 w-full mt-24">
+      <div className="flex flex-col items-center text-2xl p-12 w-full mt-18">
         <h2>Welcome to your personal journal</h2>
         <h1 className="text-3xl mb-12">Hi {session.user.name || session.user.email}</h1>
         <Button variant="outline" className="border border-slate-300 px-6 py-4">Start Writing</Button>
@@ -32,7 +32,7 @@ export default async function HomePage() {
       
 
       <section className="max-w-screen-xl mx-auto w-full px-4 pb-10">
-        <div className="space-y-4 pb-4">
+        <div className="space-y-4 pb-4 overflow-hidden">
           <RecentJournalComponent />
         </div>
 
