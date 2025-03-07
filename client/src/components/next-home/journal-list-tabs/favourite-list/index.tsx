@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Journal } from "@/types/journal";
+import DeleteButton from "../journal-list/delete-button";
 
 export function FavouriteList() {
   const { data: session, status } = useSession();
@@ -14,13 +15,16 @@ export function FavouriteList() {
   useEffect(() => {
     const fetchFavorites = async () => {
       if (!session?.user?.id) return;
-      
+
       try {
         setIsLoading(true);
-        const response = await fetch(`http://localhost:4000/api/journals?userId=${session.user.id}&isFavourite=true`, {
-          cache: "no-store",
-          headers: { "Content-Type": "application/json" },
-        });
+        const response = await fetch(
+          `http://localhost:4000/api/journals?userId=${session.user.id}&isFavourite=true&isHidden=false`,
+          {
+            cache: "no-store",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
 
         if (!response.ok) {
           throw new Error(`HTTP Error Status: ${response.status}`);
@@ -29,7 +33,11 @@ export function FavouriteList() {
         const data = await response.json();
         setFavourites(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch favorite journals");
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to fetch favorite journals"
+        );
       } finally {
         setIsLoading(false);
       }
@@ -38,34 +46,65 @@ export function FavouriteList() {
     fetchFavorites();
   }, [session?.user?.id]);
 
-  const handleFavoriteToggle = async (journalId: string, currentStatus: boolean) => {
-    if (!userId) return;
+  const handleFavoriteToggle = async (
+    journalId: string,
+    currentStatus: boolean
+  ) => {
+    if (!userId || !session?.accessToken) {
+      console.error("No user ID or access token");
+      return;
+    }
 
     try {
-      setFavourites(prevJournals =>
-        prevJournals.map(journal =>
-          journal._id === journalId ? { ...journal, isFavourite: !currentStatus } : journal
+      // Optimistic update
+      setFavourites((prevJournals) =>
+        prevJournals.map((journal) =>
+          journal._id === journalId
+            ? { ...journal, isFavourite: !currentStatus }
+            : journal
         )
       );
 
-      const response = await fetch(`http://localhost:4000/api/favourite/${journalId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFavourite: !currentStatus }),
-      });
+      const response = await fetch(
+        `http://localhost:4000/api/favourite/${journalId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.accessToken}`,
+          },
+          body: JSON.stringify({
+            isFavourite: !currentStatus,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error(`Error: ${response.status}`);
+        const errorBody = await response.text();
+        console.error(`Error response: ${response.status}`, errorBody);
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } catch (error) {
-      console.error("Failed to toggle favorite status:", error);
 
-      setFavourites(prevJournals =>
-        prevJournals.map(journal =>
-          journal._id === journalId ? { ...journal, isFavourite: currentStatus } : journal
+      await response.json();
+    } catch (error) {
+      console.error("Error in handleFavoriteToggle:", error);
+
+      setFavourites((prevJournals) =>
+        prevJournals.map((journal) =>
+          journal._id === journalId
+            ? { ...journal, isFavourite: !currentStatus }
+            : journal
         )
       );
     }
+  };
+
+  
+
+  const handleDeleteSuccess = (deletedId: string) => {
+    setFavourites(
+      favourites.filter((favourite) => favourite._id !== deletedId)
+    );
   };
 
   if (status === "loading" || isLoading) {
@@ -85,16 +124,25 @@ export function FavouriteList() {
   }
 
   if (!favourites.length) {
-    return <div className="p-4 text-center text-gray-600">No favorite journals found.</div>;
+    return (
+      <div className="p-4 text-center text-gray-600">
+        No favorite journals found.
+      </div>
+    );
   }
 
-  return(
+  return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       {favourites.map((journal) => (
         <div
           key={journal._id}
-          className="h-64 p-6 bg-white rounded-lg shadow-md flex flex-col justify-between hover:bg-slate-50"
+          className="relative h-64 p-6 bg-white rounded-lg shadow-md flex flex-col justify-between hover:bg-slate-50"
         >
+          <DeleteButton
+            journalId={journal._id}
+            className="absolute top-2 right-2 z-10"
+            onDeleteSuccess={() => handleDeleteSuccess(journal._id)}
+          />
           <div className="flex-1 overflow-hidden">
             <h3 className="text-xl font-semibold mb-2">
               {journal.title || "Untitled Journal"}

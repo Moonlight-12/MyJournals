@@ -26,7 +26,7 @@ export default function SigninForm() {
         setError("invalid credentials");
         return;
       }
-      router.replace("home");
+      router.replace("next-home");
     } catch (error) {
       console.log(error);
     }

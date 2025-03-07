@@ -11,6 +11,10 @@ export async function getAllJournals(userId: string): Promise<Journal[]> {
     throw new Error("No authentication token available");
   }
 
+  if (session.user.id !== userId) {
+    throw new Error("Access denied");
+  }
+
   try {
     const response = await fetch(
       `http://localhost:4000/api/journals?userId=${userId}`,
