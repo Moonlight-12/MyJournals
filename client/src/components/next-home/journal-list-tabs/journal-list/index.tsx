@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import DeleteButton from "./delete-button";
 
 interface Journal {
   _id: string;
@@ -13,43 +14,49 @@ interface Journal {
 
 export default function DisplayList() {
   const { data: session, status } = useSession();
-  const userId = session?.user?.id;
-
   const [journals, setJournals] = useState<Journal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const userId = session?.user?.id;
+
   useEffect(() => {
-    if (!userId) return;
+    // Only fetch if we have a userId and are authenticated
+    if (status === "authenticated" && userId) {
+      const fetchJournals = async () => {
+        try {
+          setIsLoading(true);
+          const response = await fetch(
+            `http://localhost:4000/api/journals?userId=${userId}`,
+            {
+              cache: "no-store",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-    const fetchJournals = async () => {
-      try {
-        setIsLoading(true);
-        const response = await fetch(
-          `http://localhost:4000/api/journals?userId=${userId}`,
-          {
-            cache: "no-store",
-            headers: { "Content-Type": "application/json" },
+          if (!response.ok) {
+            throw new Error(`HTTP Error Status: ${response.status}`);
           }
-        );
 
-        if (!response.ok) {
-          throw new Error(`HTTP Error Status: ${response.status}`);
+          const data: Journal[] = await response.json();
+          setJournals(data);
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : "Failed to fetch journals"
+          );
+        } finally {
+          setIsLoading(false);
         }
+      };
 
-        const data: Journal[] = await response.json();
-        setJournals(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch journals"
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchJournals();
-  }, [userId]);
+      fetchJournals();
+    } else if (status !== "authenticated") {
+      // Reset state when not authenticated
+      setJournals([]);
+      setIsLoading(false);
+      setError(null);
+    }
+  }, [status, userId]);
 
   const handleFavoriteToggle = async (
     journalId: string,
@@ -59,7 +66,7 @@ export default function DisplayList() {
       console.error("No user ID or access token");
       return;
     }
-  
+
     try {
       // Optimistic update
       setJournals((prevJournals) =>
@@ -69,29 +76,28 @@ export default function DisplayList() {
             : journal
         )
       );
-  
+
       const response = await fetch(
         `http://localhost:4000/api/favourite/${journalId}`,
         {
           method: "PATCH",
-          headers: { 
+          headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${session.accessToken}`
+            Authorization: `Bearer ${session.accessToken}`,
           },
-          body: JSON.stringify({ 
-            isFavourite: !currentStatus
+          body: JSON.stringify({
+            isFavourite: !currentStatus,
           }),
         }
       );
-  
+
       if (!response.ok) {
         const errorBody = await response.text();
         console.error(`Error response: ${response.status}`, errorBody);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-  
-      const data = await response.json();
-  
+
+      await response.json();
     } catch (error) {
       console.error("Error in handleFavoriteToggle:", error);
 
@@ -105,11 +111,17 @@ export default function DisplayList() {
     }
   };
 
+  const handleDeleteSuccess = (deletedId: string) => {
+    // Remove the deleted journal from state
+    setJournals(journals.filter(journal => journal._id !== deletedId));
+  };
+
+  // Render logic based on status and data
   if (status === "loading") {
     return <div className="p-4 text-center">Loading journals...</div>;
   }
 
-  if (!session?.user?.id) {
+  if (status !== "authenticated") {
     return (
       <div className="p-4 text-center">
         Please sign in to view your journals
@@ -138,8 +150,13 @@ export default function DisplayList() {
       {journals.map((journal) => (
         <div
           key={journal._id}
-          className="h-64 p-6 bg-white rounded-lg shadow-md flex flex-col justify-between hover:bg-slate-50"
+          className="relative h-64 p-6 bg-white rounded-lg shadow-md flex flex-col justify-between hover:bg-slate-50"
         >
+          <DeleteButton
+            journalId={journal._id}
+            className="absolute top-2 right-2 z-10"
+            onDeleteSuccess={() => handleDeleteSuccess(journal._id)}
+          />
           <div className="flex-1 overflow-hidden">
             <h3 className="text-xl font-semibold mb-2">
               {journal.title || "Untitled Journal"}

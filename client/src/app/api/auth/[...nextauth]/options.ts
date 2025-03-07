@@ -1,6 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import GitHubProvider from "next-auth/providers/github";
 import CredentialsProvider from "next-auth/providers/credentials";
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export const options: NextAuthOptions = {
   providers: [
@@ -53,11 +54,14 @@ export const options: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
+        const decodedToken = jwt.decode(user.token ?? "") as JwtPayload;
+
         return {
           ...token,
           id: String(user.id),
           username: user.name ?? null,
           accessToken: user.token ?? null,
+          exp: decodedToken?.exp,
         };
       }
       return token;
