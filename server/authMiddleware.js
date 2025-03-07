@@ -1,22 +1,27 @@
 const jwt = require('jsonwebtoken');
-const { ObjectId } = require('mongodb');
 
 const authMiddleware = async (req, res, next) => {
-    // Assuming you're using a token-based authentication
     try {
-      const token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
-      // Ensure userId is converted to a string, not an ObjectId
-      req.user = {
-        id: String(decoded.userId), // Explicitly convert to string
-        // other user details
-      };
-  
-      next();
+        const token = req.headers.authorization; 
+
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
+        }
+
+        const actualToken = token.split(' ')[1];
+
+        const decoded = jwt.verify(actualToken, process.env.JWT_SECRET);
+        console.log('Decoded Token:', decoded);
+
+        req.user = {
+            id: String(decoded.userId),
+        };
+
+        next();
     } catch (error) {
-      res.status(401).unauthorized({ error: 'Unauthorized' });
+        console.error('Authentication Error:', error); // Log the error
+        return res.status(401).json({ error: 'Unauthorized' });
     }
-  };
+};
 
 module.exports = authMiddleware;

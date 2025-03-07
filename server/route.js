@@ -285,7 +285,7 @@ router.get("/recents", async (req, res) => {
     const collection = getJournalCollection();
 
     const recents = await collection
-      .find({ userId })
+      .find({ userId, isHidden: false })
       .sort({ createdAt: -1 })
       .limit(5)
       .toArray();
@@ -305,8 +305,8 @@ router.get("/recents", async (req, res) => {
   }
 });
 
-//Soft Delete /journals/:id
-router.patch("/journal/:id", authMiddleware, async (req, res) => {
+//Soft Delete /delete/:id
+router.patch("/delete/:id", authMiddleware, async (req, res) => {
   try {
     const journalId = req.params.id;
     const userId = req.user.id; // From authMiddleware
@@ -342,7 +342,7 @@ router.patch("/journal/:id", authMiddleware, async (req, res) => {
     });
 
     res.status(200).json({
-      message: "Journal soft deleted successfully",
+      message: "Journal deleted successfully",
       journal: updatedJournal
     });
 
