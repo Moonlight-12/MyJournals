@@ -165,6 +165,7 @@ router.get("/journals", async (req, res) => {
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
   const { title, content, userId } = req.body;
+  const currentDate = new Date();
 
   if (!title || !content) {
     return res
@@ -177,10 +178,11 @@ router.post("/journals", async (req, res) => {
       title,
       content,
       userId,
-      createdAt: new Date(),
+      createdAt: currentDate,
       status: false,
       isFavourite: false,
       isHidden: false,
+      updatedAt: currentDate,
     });
 
     res.status(200).json({
@@ -286,7 +288,7 @@ router.get("/recents", async (req, res) => {
 
     const recents = await collection
       .find({ userId, isHidden: false })
-      .sort({ createdAt: -1 })
+      .sort({ updatedAt: -1 })
       .limit(5)
       .toArray();
 

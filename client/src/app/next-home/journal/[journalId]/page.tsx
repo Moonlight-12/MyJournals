@@ -70,7 +70,7 @@ export default function JournalPage() {
         setError(null);
         
         
-        const response = await fetch(`http://localhost:4000/api/edit/edit/${journalId}`, {
+        const response = await fetch(`http://localhost:4000/api/edit/${journalId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
