@@ -165,6 +165,7 @@ router.get("/journals", async (req, res) => {
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
   const { title, content, userId } = req.body;
+  const currentDate = new Date();
 
   if (!title || !content) {
     return res
@@ -177,10 +178,11 @@ router.post("/journals", async (req, res) => {
       title,
       content,
       userId,
-      createdAt: new Date(),
+      createdAt: currentDate,
       status: false,
       isFavourite: false,
       isHidden: false,
+      updatedAt: currentDate,
     });
 
     res.status(200).json({
@@ -286,7 +288,7 @@ router.get("/recents", async (req, res) => {
 
     const recents = await collection
       .find({ userId, isHidden: false })
-      .sort({ createdAt: -1 })
+      .sort({ updatedAt: -1 })
       .limit(5)
       .toArray();
 
@@ -324,7 +326,7 @@ router.patch("/delete/:id", authMiddleware, async (req, res) => {
       { 
         $set: { 
           isHidden: true,
-          updatedAt: new Date() 
+          deletedAt: new Date() 
         } 
       }
     );
@@ -356,6 +358,85 @@ router.patch("/delete/:id", authMiddleware, async (req, res) => {
     res.status(500).json({ 
       error: "Internal server error", 
       message: error.message 
+    });
+  }
+});
+
+//edit Journal
+router.patch("/edit/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { title, content, isFavourite, status } = req.body;
+    
+    if (!id) {
+      return res.status(400).json({ error: "Journal ID is required" });
+    }
+
+    const collection = getJournalCollection();
+    
+    // Create update data object
+    const updateData = {};
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+    if (isFavourite !== undefined) updateData.isFavourite = isFavourite;
+    if (status !== undefined) updateData.status = status;
+    
+    // Add last edited date
+    const updatedAt = new Date();
+    updateData.updatedAt = updatedAt;
+    
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: updateData }
+    );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "Journal not found" });
+    }
+    
+    // Get the updated journal to return to the client
+    const updatedJournal = await collection.findOne({ _id: new ObjectId(id) });
+    
+    res.status(200).json(updatedJournal);
+  } catch (error) {
+    console.error("Error updating journal:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
+  }
+});
+
+//get journal by id
+router.get("/journal/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    
+    if (!id) {
+      return res.status(400).json({ error: "Journal ID is required" });
+    }
+
+    const collection = getJournalCollection();
+    
+    const journal = await collection.findOne({ _id: new ObjectId(id), isHidden: false });
+    
+    if (!journal) {
+      return res.status(404).json({ error: "Journal not found" });
+    }
+    
+    res.status(200).json({
+      _id: journal._id,
+      title: journal.title,
+      content: journal.content,
+      createdAt: journal.createdAt,
+      status: journal.status,
+      isFavourite: journal.isFavourite,
+    });
+  } catch (error) {
+    console.error("Error fetching journal:", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
     });
   }
 });
