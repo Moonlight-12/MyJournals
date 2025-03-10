@@ -18,3 +18,5 @@ Myjournal is created using NextJs and ReactJs with Typescript
 
 
 ![excited-run](https://github.com/user-attachments/assets/be3a4da3-65b8-457a-9aff-c14dfe1b9bb1)
+![authentication](https://github.com/user-attachments/assets/9c825f06-cf3b-4b57-a7b0-950aaca07037)
+![Github-OAuth](https://github.com/user-attachments/assets/f40f1757-4cf5-4065-a567-925943a8bb18)
