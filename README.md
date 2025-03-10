@@ -8,10 +8,10 @@ Myjournal is created using NextJs and ReactJs with Typescript
 ## Features
 <ul>
 <li> Authentication
-  ![authentication](https://github.com/user-attachments/assets/ad9c8b3e-3340-4931-8cfd-8f115162c67f)
+  ![Image](https://github.com/user-attachments/assets/01e6dafb-a282-4fb7-9a81-12df3c2e3f45)
 
 <li> OAuth Authentication
-  ![Github-OAuth](https://github.com/user-attachments/assets/5d8e0452-c0ef-491f-9b16-eed8f42b0272)
+  ![Image](https://github.com/user-attachments/assets/b5acc85e-2346-4d24-999b-220e23fc5acf)
 
 </li>
 
