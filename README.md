@@ -8,7 +8,7 @@ Myjournal is created using NextJs and ReactJs with Typescript
 ##Features
 <ul>
 <li> Authentication
-  ![Authentication](client/public/assets/authentication.gif)
+  ![Authentication](assets/authentication.gif)
 <li> OAuth Authentication</li>
 
 
