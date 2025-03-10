@@ -39,5 +39,5 @@ MyJournal is created using Next.js and React.js with TypeScript.
   I chose MongoDB as the database for MyJournal due to its flexibility, scalability, and seamless integration with modern web applications. Unlike traditional relational databases, MongoDB's NoSQL document-based structure eliminates the need to define and maintain a strict SQL schema, making development faster and more adaptable.
 
 ## Links
-<a href="https://github.com/Moonlight-12/MyJournals/tree/main/server">Backend</a>
+<a href="https://github.com/Moonlight-12/MyJournals/tree/main/server">Backend</a> <br>
 <a href="https://github.com/Moonlight-12/MyJournals/tree/main/client">Frontend</a>
