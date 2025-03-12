@@ -5,6 +5,7 @@ const { getConnectedClient } = require("./database");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("./authMiddleware");
+const { updateStreak } = require('./streakservice');
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -45,6 +46,9 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
       username: safeUsername,
       createdAt,
+      streak: { 
+        count: 0,
+      },
     });
     return res.status(200).json({
       success: true,
@@ -161,10 +165,49 @@ router.get("/journals", async (req, res) => {
   }
 });
 
-//POST /journal
+// //POST /journal
+// router.post("/journals", async (req, res) => {
+//   const collection = getJournalCollection();
+//   const { title, content, userId } = req.body;
+//   const currentDate = new Date();
+
+//   if (!title || !content) {
+//     return res
+//       .status(400)
+//       .json({ success: false, mssg: "missing required fields" });
+//   }
+
+//   try {
+//     const newJournal = await collection.insertOne({
+//       title,
+//       content,
+//       userId,
+//       createdAt: currentDate,
+//       status: false,
+//       isFavourite: false,
+//       isHidden: false,
+//       updatedAt: currentDate,
+//     });
+
+//     res.status(200).json({
+//       success: true,
+//       title,
+//       content,
+//       userId,
+//       status: false,
+//       isFavourite: false,
+//       _id: newJournal.insertedId,
+//     });
+//   } catch (error) {
+//     console.error("Journal creation error:", error);
+//     res.status(500).json({ success: false, msg: "Server error" });
+//   }
+// });
+
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
-  const { title, content, userId } = req.body;
+  const { title, content, userId, testDate } = req.body; // Add testDate parameter
+  console.log("User ID from request:", req.body.userId);
   const currentDate = new Date();
 
   if (!title || !content) {
@@ -185,6 +228,10 @@ router.post("/journals", async (req, res) => {
       updatedAt: currentDate,
     });
 
+    // Update streak after successfully creating journal
+    // Pass the testDate if it exists
+    const newStreakCount = await updateStreak(userId, testDate);
+
     res.status(200).json({
       success: true,
       title,
@@ -193,6 +240,7 @@ router.post("/journals", async (req, res) => {
       status: false,
       isFavourite: false,
       _id: newJournal.insertedId,
+      streak: newStreakCount
     });
   } catch (error) {
     console.error("Journal creation error:", error);
@@ -440,3 +488,51 @@ router.get("/journal/:id", async (req, res) => {
     });
   }
 });
+
+
+// Get current streak
+router.get("/streak", authMiddleware, async (req, res) => {
+  try {
+    const usersCollection = getUserCollection();
+    const userId = req.user.id; // userId is a string
+
+    const objectId = new ObjectId(userId); // Convert to ObjectId
+
+    const user = await usersCollection.findOne({ _id: objectId }); // Query with ObjectId
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.json({ streak: user.streak?.count || 0 });
+  } catch (error) {
+    console.error("Error fetching streak:", error);
+    res.status(500).json({ error: "Failed to fetch streak" });
+  }
+});
+
+//get user personal information
+router.get("/profile/:id", authMiddleware, async (req,res) => {
+  try {
+    const usersCollection = getUserCollection();
+    const userId = req.params.id;
+
+    const objectId = new ObjectId(userId);
+
+    const user = await usersCollection.findOne({_id:objectId});
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    return res.status(200).json({
+      _Id: user._id,
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt,
+    });
+  } catch (error) {
+    console.error("fail to fetch user", error);
+    return res.status(500).json({ error: "Server error" });
+  }
+})
