@@ -22,7 +22,6 @@ export default function DisplayList() {
   const userId = session?.user?.id;
 
   useEffect(() => {
-    // Only fetch if we have a userId and are authenticated
     if (status === "authenticated" && userId) {
       const fetchJournals = async () => {
         try {
@@ -52,7 +51,6 @@ export default function DisplayList() {
 
       fetchJournals();
     } else if (status !== "authenticated") {
-      // Reset state when not authenticated
       setJournals([]);
       setIsLoading(false);
       setError(null);
@@ -113,11 +111,9 @@ export default function DisplayList() {
   };
 
   const handleDeleteSuccess = (deletedId: string) => {
-    // Remove the deleted journal from state
     setJournals(journals.filter(journal => journal._id !== deletedId));
   };
-
-  // Render logic based on status and data
+  
   if (status === "loading") {
     return <div className="p-4 text-center">Loading journals...</div>;
   }

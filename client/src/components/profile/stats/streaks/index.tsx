@@ -17,7 +17,6 @@ export default function DisplayStreaks() {
     }
   }, [status, session]);
 
-
   const getStreak = async () => {
     if (!session?.user?.id || !session?.accessToken) {
       setError("No user ID or access token");
@@ -51,8 +50,18 @@ export default function DisplayStreaks() {
     }
   };
 
-  if (loading) return <div className="text-center text-gray-500 p-4">Loading streak data...</div>;
-  if (error) return <div className="text-center text-red-500 p-4">Error loading streak: {error}</div>;
+  if (loading)
+    return (
+      <div className="text-center text-gray-500 p-4">
+        Loading streak data...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="text-center text-red-500 p-4">
+        Error loading streak: {error}
+      </div>
+    );
 
   // Get milestone styles based on streak count
   const getMilestoneStyles = () => {
@@ -70,26 +79,34 @@ export default function DisplayStreaks() {
 
   return (
     <div className="flex justify-center items-center">
-      <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">Current Streak</h3>
+      <div className="bg-white rounded-md shadow-md p-6 text-center w-48 h-52">
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">
+          Current Streak
+        </h3>
         <div className="relative flex items-center justify-center">
           <div className="absolute -top-4 animate-bounce">
             <span className="text-2xl">🔥</span>
           </div>
+
           <div
-            className={`relative w-20 h-20 flex items-center justify-center rounded-full ${getMilestoneStyles()}`}
+            className={
+              streak > 0
+                ? `relative w-24 h-24 flex items-center justify-center rounded-full ${getMilestoneStyles()}`
+                : `relative w-16 h-16 flex items-center justify-center rounded-full ${getMilestoneStyles()}`
+            }
           >
             <div className="text-3xl font-bold text-gray-800">{streak}</div>
           </div>
         </div>
-        {streak > 0 && (
-          <p className="text-sm text-gray-500 mt-4">Keep up the good work!</p>
-        )}
-        {streak === 0 && (
-          <p className="text-sm text-gray-500 mt-4">
-            Start your streak by writing a journal entry today!
-          </p>
-        )}
+        <div className="h-8 flex items-center justify-center mt-4">
+          {streak > 0 ? (
+            <p className="text-sm text-gray-500"></p>
+          ) : (
+            <p className="text-sm text-gray-500 px-2">
+              Start your streak by writing a journal entry today!
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
