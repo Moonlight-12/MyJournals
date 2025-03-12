@@ -42,8 +42,8 @@ export function FavouriteList() {
         setIsLoading(false);
       }
     };
-
     fetchFavorites();
+
   }, [session?.user?.id]);
 
   const handleFavoriteToggle = async (
