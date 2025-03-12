@@ -4,6 +4,7 @@ import { RecentJournalComponent } from "@/components/next-home/recent-journal";
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
+import DisplayStreaks from "@/components/profile/streaks";
 
 export default async function HomePage() {
   const session = await getServerSession(options);
@@ -27,6 +28,10 @@ export default async function HomePage() {
         <h2>Welcome to your personal journal</h2>
         <h1 className="text-3xl mb-12">Hi {session.user.name || session.user.email}</h1>
         <Button variant="outline" className="border border-slate-300 px-6 py-4">Start Writing</Button>
+      </div>
+
+      <div className="p-4 mb-4">
+        <DisplayStreaks />
       </div>
 
       

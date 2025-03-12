@@ -33,3 +33,63 @@ input {
 .scrollbar-recent{
   @apply !w-[200px] !-translate-x-1/2 !left-[50%]
 }
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 159, 0, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(255, 159, 0, 0.8); }
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.milestone-starter {
+  border: 3px solid #ffa500;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.milestone-advanced {
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(45deg, #ffa500, #ff4500) border-box;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.milestone-master {
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              linear-gradient(90deg, #ffd700, #ff8c00, #ffd700) border-box;
+  background-size: 200% auto;
+  animation: shimmer 3s linear infinite;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+}
+
+.milestone-legendary {
+  border: 4px solid transparent;
+  background: linear-gradient(white, white) padding-box,
+              conic-gradient(
+                #ffd700,
+                #ff8c00,
+                #ffd700,
+                #ff4500,
+                #ffd700
+              ) border-box;
+  animation: rotate 4s linear infinite, glow 2s ease-in-out infinite ;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+/* Add hover effects */
+.milestone-starter:hover,
+.milestone-advanced:hover,
+.milestone-master:hover,
+.milestone-legendary:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
