@@ -4,7 +4,7 @@ import { RecentJournalComponent } from "@/components/next-home/recent-journal";
 import { getServerSession } from "next-auth";
 import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
-import DisplayStreaks from "@/components/profile/streaks";
+import DisplayStreaks from "@/components/profile/stats/streaks";
 
 export default async function HomePage() {
   const session = await getServerSession(options);
