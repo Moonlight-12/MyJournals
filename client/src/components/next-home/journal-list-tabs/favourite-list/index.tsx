@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { Journal } from "@/types/journal";
 import DeleteButton from "../journal-list/delete-button";
+import Link from "next/link";
 
 export function FavouriteList() {
   const { data: session, status } = useSession();
@@ -43,7 +44,6 @@ export function FavouriteList() {
       }
     };
     fetchFavorites();
-
   }, [session?.user?.id]);
 
   const handleFavoriteToggle = async (
@@ -99,8 +99,6 @@ export function FavouriteList() {
     }
   };
 
-  
-
   const handleDeleteSuccess = (deletedId: string) => {
     setFavourites(
       favourites.filter((favourite) => favourite._id !== deletedId)
@@ -136,42 +134,46 @@ export function FavouriteList() {
       {favourites.map((journal) => (
         <div
           key={journal._id}
-          className="relative h-64 p-6 bg-white rounded-lg shadow-md flex flex-col justify-between hover:bg-slate-50"
+          className="relative h-64 bg-white rounded-lg shadow-md "
         >
           <DeleteButton
             journalId={journal._id}
             className="absolute top-2 right-2 z-10"
             onDeleteSuccess={() => handleDeleteSuccess(journal._id)}
           />
-          <div className="flex-1 overflow-hidden">
-            <h3 className="text-xl font-semibold mb-2">
-              {journal.title || "Untitled Journal"}
-            </h3>
-            <p className="text-gray-600 line-clamp-6">
-              {journal.content || "No content available"}
-            </p>
-          </div>
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-sm text-gray-500">
-              {new Date(journal.createdAt).toLocaleDateString()}
-            </span>
-            <button
-              onClick={() =>
-                handleFavoriteToggle(journal._id, journal.isFavourite)
-              }
-              className="px-4 py-2  text-white rounded-lg transition-colors"
-            >
-              <img
-                src={
-                  journal.isFavourite
-                    ? "/red-heart-icon.svg"
-                    : "/heart-svgrepo-com.svg"
-                }
-                alt="Favorite Icon"
-                className="h-8 w-8 fill-current min-w-6 md:min-w-8"
-              />
-            </button>
-          </div>
+          <Link href={`/next-home/journal/${journal._id}`}>
+            <div className="h-full p-6 flex flex-col justify-between hover:bg-slate-50">
+              <div className="flex-1 overflow-hidden">
+                <h3 className="text-xl font-semibold mb-2">
+                  {journal.title || "Untitled Journal"}
+                </h3>
+                <p className="text-gray-600 line-clamp-6">
+                  {journal.content || "No content available"}
+                </p>
+              </div>
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-sm text-gray-500">
+                  {new Date(journal.createdAt).toLocaleDateString()}
+                </span>
+                <button
+                  onClick={() =>
+                    handleFavoriteToggle(journal._id, journal.isFavourite)
+                  }
+                  className="px-4 py-2  text-white rounded-lg transition-colors"
+                >
+                  <img
+                    src={
+                      journal.isFavourite
+                        ? "/red-heart-icon.svg"
+                        : "/heart-svgrepo-com.svg"
+                    }
+                    alt="Favorite Icon"
+                    className="h-8 w-8 fill-current min-w-6 md:min-w-8"
+                  />
+                </button>
+              </div>
+            </div>
+          </Link>
         </div>
       ))}
     </div>
