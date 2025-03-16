@@ -2,6 +2,19 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
+import { EditProfileButton } from "./details-client";
+
+// Define types for TypeScript support
+interface User {
+  id: string;
+  username?: string;
+  email: string;
+}
+
+interface Session {
+  user: User;
+  accessToken?: string;
+}
 
 export async function ProfileDetails() {
   const session = await getServerSession(options);
@@ -23,13 +36,21 @@ export async function ProfileDetails() {
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="relative space-y-4">
+          <div className="absolute top-0 right-4">
+            <EditProfileButton 
+              userId={session.user.id} 
+              initialUsername={session.user.name || ""}
+              initialEmail={session.user.email}
+            />
+          </div>
+          
           <div>
             <label className="block text-sm font-medium text-slate-500 mb-1">
               Username
             </label>
             <div className="text-lg font-medium text-slate-800">
-              {session.user.username || "none"}
+              {session.user.name || "none"}
             </div>
           </div>
 

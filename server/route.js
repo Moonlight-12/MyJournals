@@ -536,3 +536,34 @@ router.get("/profile/:id", authMiddleware, async (req,res) => {
     return res.status(500).json({ error: "Server error" });
   }
 })
+
+
+//update profile details
+router.patch("/update-profile", authMiddleware, async (req, res) => {
+  try{
+    const usersCollection = getUserCollection();
+    const userId = req.user.id;
+    const {username, email} = req.body;
+
+    const updateData = {};
+    if (username !== undefined) updateData.username = username;
+    if (email !== undefined) updateData.email = email;
+
+    const result = usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: updateData});
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    
+    // Get the updated data to return to the client
+    const updatedDetails = await usersCollection.findOne({ _id: new ObjectId(userId) });
+    
+    res.status(200).json(updatedDetails);
+  } catch (error) {
+    console.error("failed to update details", error);
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
+    });
+  }
+})
