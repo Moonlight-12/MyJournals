@@ -23,6 +23,7 @@ const connectToMongoDB = async () => {
       try {
         client = await MongoClient.connect(uri, options);
         db = client.db('journaldb'); 
+        console.log("connected to mongodb")
       } catch (error) {
         console.log(error);
         throw error; 

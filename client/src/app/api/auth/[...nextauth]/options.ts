@@ -84,6 +84,13 @@ export const options: NextAuthOptions = {
     },
   },
 
+  events: {
+    async updateUser({ user }) {
+      // Handle user updates - you might need this for session refresh
+      console.log("User updated:", user);
+    },
+  },
+
   session: {
     strategy: "jwt",
   },
