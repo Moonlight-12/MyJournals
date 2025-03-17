@@ -74,7 +74,7 @@ router.post("/auth/signin", async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1h" }
+      { expiresIn: "5h" }
     );
   };
 
@@ -164,45 +164,6 @@ router.get("/journals", async (req, res) => {
     });
   }
 });
-
-// //POST /journal
-// router.post("/journals", async (req, res) => {
-//   const collection = getJournalCollection();
-//   const { title, content, userId } = req.body;
-//   const currentDate = new Date();
-
-//   if (!title || !content) {
-//     return res
-//       .status(400)
-//       .json({ success: false, mssg: "missing required fields" });
-//   }
-
-//   try {
-//     const newJournal = await collection.insertOne({
-//       title,
-//       content,
-//       userId,
-//       createdAt: currentDate,
-//       status: false,
-//       isFavourite: false,
-//       isHidden: false,
-//       updatedAt: currentDate,
-//     });
-
-//     res.status(200).json({
-//       success: true,
-//       title,
-//       content,
-//       userId,
-//       status: false,
-//       isFavourite: false,
-//       _id: newJournal.insertedId,
-//     });
-//   } catch (error) {
-//     console.error("Journal creation error:", error);
-//     res.status(500).json({ success: false, msg: "Server error" });
-//   }
-// });
 
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
@@ -571,92 +532,6 @@ router.patch("/update-profile", authMiddleware, async (req, res) => {
       error: "Internal server error",
       message: error.message,
     });
-  }
-});
-
-// User routes
-router.get("/api/users/check", async (req, res) => {
-  try {
-    const { email } = req.query;
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
-
-    const user = await db.collection("users").findOne({ email });
-
-    if (user) {
-      return res.json({
-        id: user._id.toString(),
-        email: user.email,
-        exists: true,
-      });
-    } else {
-      return res.json({ exists: false });
-    }
-  } catch (error) {
-    console.error("User check error:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-router.post("/api/users/oauth", async (req, res) => {
-  try {
-    const { email, name, provider, providerId } = req.body;
-
-    // Validate required fields
-    if (!email || !provider || !providerId) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
-
-    // Check if user already exists
-    const usersCollection = db.collection("users");
-    let user = await usersCollection.findOne({ email });
-
-    if (user) {
-      // Update existing user with OAuth info if needed
-      const providers = user.providers || [];
-      const providerIds = user.providerId || {};
-
-      if (!providers.includes(provider)) {
-        providers.push(provider);
-        providerIds[provider] = providerId;
-
-        await usersCollection.updateOne(
-          { _id: user._id },
-          {
-            $set: {
-              providers: providers,
-              providerId: providerIds,
-            },
-          }
-        );
-      }
-    } else {
-      // Create a new user
-      const result = await usersCollection.insertOne({
-        email,
-        username: name || email.split("@")[0], // Use name or generate username from email
-        providers: [provider],
-        providerId: { [provider]: providerId },
-        createdAt: new Date(),
-      });
-
-      user = {
-        _id: result.insertedId,
-        email,
-        username: name || email.split("@")[0],
-      };
-    }
-
-    res.status(201).json({
-      id: user._id.toString(),
-      email: user.email,
-      username: user.username,
-    });
-  } catch (error) {
-    console.error("OAuth user creation error:", error);
-    res.status(500).json({ message: "Server error" });
   }
 });
 

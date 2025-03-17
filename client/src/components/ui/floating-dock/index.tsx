@@ -47,7 +47,6 @@ const FloatingDockMobile = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const [expandUpward, setExpandUpward] = useState(false);
 
-  // Detect if menu should expand upward
   useEffect(() => {
     if (menuRef.current) {
       const rect = menuRef.current.getBoundingClientRect();
@@ -108,7 +107,7 @@ const FloatingDockMobile = ({
   );
 };
 
-// FloatingDockDesktop remains unchanged
+
 const FloatingDockDesktop = ({
   items,
   className,

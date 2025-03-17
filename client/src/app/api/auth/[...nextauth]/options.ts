@@ -1,7 +1,7 @@
-import type { NextAuthOptions } from "next-auth"
-import GitHubProvider from "next-auth/providers/github"
-import CredentialsProvider from "next-auth/providers/credentials"
-import jwt, { type JwtPayload } from "jsonwebtoken"
+import type { NextAuthOptions } from "next-auth";
+import GitHubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 
 export const options: NextAuthOptions = {
   providers: [
@@ -18,43 +18,44 @@ export const options: NextAuthOptions = {
 
       async authorize(credentials) {
         if (!credentials || !credentials.email || !credentials.password) {
-          return null
+          return null;
         }
 
         try {
-          const response = await fetch("http://localhost:4000/api/auth/signin", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(credentials),
-          })
+          const response = await fetch(
+            "http://localhost:4000/api/auth/signin",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(credentials),
+            }
+          );
 
           if (!response.ok) {
-            return null
+            return null;
           }
 
-          const user = await response.json()
+          const user = await response.json();
 
-          if (!user || !user.id) return null
+          if (!user || !user.id) return null;
 
           return {
             id: user.id,
             email: user.email,
             name: user.username,
             token: user.token ?? null,
-          }
+          };
         } catch (error) {
-          return null
+          return null;
         }
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user, account }) {
-      // Initial sign-in
       if (account && user) {
-        // For credential provider
         if (account.type === "credentials" && user.token) {
-          const decodedToken = jwt.decode(user.token) as JwtPayload
+          const decodedToken = jwt.decode(user.token) as JwtPayload;
 
           return {
             ...token,
@@ -62,16 +63,14 @@ export const options: NextAuthOptions = {
             username: user.name ?? null,
             accessToken: user.token,
             exp: decodedToken?.exp,
-          }
+          };
         }
 
-        // For OAuth providers (like GitHub)
         if (account.type === "oauth") {
           try {
-            // Use environment variable for API URL
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+            const API_URL =
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-            // Call your signin endpoint to get a proper token
             const signinResponse = await fetch(`${API_URL}/api/auth/signin`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -80,31 +79,34 @@ export const options: NextAuthOptions = {
                 name: user.name || "",
                 provider: account.provider,
               }),
-            })
+            });
 
             if (!signinResponse.ok) {
-              console.error("Error getting token for OAuth user:", await signinResponse.text())
-              return token
+              console.error(
+                "Error getting token for OAuth user:",
+                await signinResponse.text()
+              );
+              return token;
             }
 
-            const userData = await signinResponse.json()
-            console.log("Got token for OAuth user:", userData)
+            const userData = await signinResponse.json();
+            console.log("Got token for OAuth user:", userData);
 
             return {
               ...token,
-              id: userData.id.toString(), // Ensure it's a string
+              id: userData.id.toString(),
               username: userData.username,
-              accessToken: userData.token, // Use your server's token
+              accessToken: userData.token,
               provider: account.provider,
-            }
+            };
           } catch (error) {
-            console.error("Error in OAuth token generation:", error)
-            return token
+            console.error("Error in OAuth token generation:", error);
+            return token;
           }
         }
       }
 
-      return token
+      return token;
     },
 
     async session({ session, token }) {
@@ -117,17 +119,16 @@ export const options: NextAuthOptions = {
             name: token.username,
           },
           accessToken: token.accessToken ?? null,
-        }
+        };
       }
 
-      return session
+      return session;
     },
   },
 
-  // Remove the signIn event handler since we're handling token generation in the jwt callback
   events: {
     async updateUser({ user }) {
-      console.log("User updated:", user)
+      console.log("User updated:", user);
     },
   },
 
@@ -140,5 +141,4 @@ export const options: NextAuthOptions = {
   pages: {
     signIn: "/signin",
   },
-}
-
+};

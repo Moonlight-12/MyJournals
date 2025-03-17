@@ -3,10 +3,8 @@ import { options } from "@/app/api/auth/[...nextauth]/options";
 import { Journal } from "../../../types/journal";
 
 export async function getAllJournals(userId: string): Promise<Journal[]> {
-  // Get the server-side session
   const session = await getServerSession(options);
 
-  // Check if session and token exist
   if (!session || !session.accessToken) {
     throw new Error("No authentication token available");
   }

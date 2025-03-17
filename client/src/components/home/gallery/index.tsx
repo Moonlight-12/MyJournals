@@ -3,7 +3,7 @@
 import { animate, useMotionValue } from "framer-motion";
 import Card from "./card";
 import useMeasure from "react-use-measure";
-import { useEffect, useState, useRef } from "react"; // Import useRef
+import { useEffect, useState, useRef } from "react"; 
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 import { GetFavourite } from "../../../app/api/get-favourites";
@@ -15,11 +15,7 @@ interface Journal {
 }
 
 export default function GalleryView() {
-  const images = [
-    "/image11.jpg",
-    "/image10.jpg",
-    "/image9.jpg",
-  ];
+  const images = ["/image11.jpg", "/image10.jpg", "/image9.jpg"];
 
   const FAST_DURATION = 15;
   const SLOW_DURATION = 10000000;
@@ -34,7 +30,7 @@ export default function GalleryView() {
   const [favorites, setFavorites] = useState<Journal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const animationEnabled = favorites.length > 2; // Determine if animation should be enabled
+  const animationEnabled = favorites.length > 2;
 
   useEffect(() => {
     async function fetchFavorites() {
@@ -54,12 +50,11 @@ export default function GalleryView() {
 
   useEffect(() => {
     if (!animationEnabled) {
-      // If animation is not enabled, don't set up animation
       return;
     }
 
     let controls;
-    let finalPosition = (-width / 2) - 8;
+    let finalPosition = -width / 2 - 8;
 
     if (mustFinish) {
       controls = animate(xTranslation, [xTranslation.get(), finalPosition], {
@@ -81,7 +76,7 @@ export default function GalleryView() {
     }
 
     return controls?.stop;
-  }, [xTranslation, width, duration, rerender, animationEnabled]); // animationEnabled dependency added
+  }, [xTranslation, width, duration, rerender, animationEnabled]);
 
   return (
     <>
@@ -89,7 +84,7 @@ export default function GalleryView() {
         <div>Loading favorites...</div>
       ) : (
         <div className="relative overflow-hidden w-full px-0 rounded-md">
-          {animationEnabled ? ( // Conditional rendering for animation
+          {animationEnabled ? (
             <motion.div
               className="flex gap-4 w-max ml-0"
               ref={ref}
@@ -122,7 +117,6 @@ export default function GalleryView() {
               })}
             </motion.div>
           ) : (
-            // Static display when animation is disabled
             <div className="flex gap-4 w-max ml-5">
               {favorites.map((journal, idx) => {
                 let imageIndex;
@@ -144,11 +138,10 @@ export default function GalleryView() {
             </div>
           )}
 
-          {animationEnabled && ( // Conditionally render fades only when animation is enabled
+          {animationEnabled && (
             <>
-              {/* Left fade overlay */}
               <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent z-10 opacity-70" />
-              {/* Right fade overlay */}
+
               <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-white to-transparent z-10 opacity-70" />
             </>
           )}

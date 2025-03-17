@@ -38,7 +38,7 @@ export function ChangePasswordButton() {
     setError("");
 
     try {
-      // Send the update request to your API
+      
       const response = await fetch(
         "http://localhost:4000/api/change-password",
         {
@@ -60,7 +60,7 @@ export function ChangePasswordButton() {
         throw new Error(data.error || "Failed to update password");
       }
 
-      // Set success state
+      
       setUpdateSuccess(true);
       setIsEditing(false);
 
