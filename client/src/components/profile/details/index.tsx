@@ -1,14 +1,14 @@
-import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { options } from "@/app/api/auth/[...nextauth]/options";
-import { Button } from "@/components/ui/button";
-import { EditProfileButton } from "./details-client";
+import { EditProfileButton } from "./edit-profile-button";
+import { ChangePasswordButton } from "./change-password-button";
 
 // Define types for TypeScript support
 interface User {
   id: string;
   username?: string;
-  email: string;
+  name?: string | null;
+  email?: string | null;
 }
 
 interface Session {
@@ -27,6 +27,10 @@ export async function ProfileDetails() {
     throw new Error("Please Login first");
   }
 
+  // Ensure we have valid string values for the props
+  const userEmail = session.user.email || "";
+  const userName = session.user.name || "";
+
   return (
     <div className="w-full max-w-md bg-white shadow-md rounded-lg overflow-hidden">
       <div className="p-6">
@@ -40,8 +44,8 @@ export async function ProfileDetails() {
           <div className="absolute top-0 right-4">
             <EditProfileButton 
               userId={session.user.id} 
-              initialUsername={session.user.name || ""}
-              initialEmail={session.user.email}
+              initialUsername={userName}
+              initialEmail={userEmail}
             />
           </div>
           
@@ -50,7 +54,7 @@ export async function ProfileDetails() {
               Username
             </label>
             <div className="text-lg font-medium text-slate-800">
-              {session.user.name || "none"}
+              {userName || "none"}
             </div>
           </div>
 
@@ -59,16 +63,12 @@ export async function ProfileDetails() {
               Email
             </label>
             <div className="text-lg font-medium text-slate-800">
-              {session.user.email}
+              {userEmail || "No email provided"}
             </div>
           </div>
 
           <div className="pt-2">
-            <Link href="/" className="block">
-              <Button className="w-full bg-slate-800 hover:bg-slate-700 text-white">
-                Change password
-              </Button>
-            </Link>
+            <ChangePasswordButton />
           </div>
         </div>
       </div>

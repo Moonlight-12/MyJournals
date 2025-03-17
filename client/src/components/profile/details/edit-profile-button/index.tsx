@@ -96,7 +96,6 @@ export function EditProfileButton({
             sign back in.
           </p>
           <div className="flex space-x-2">
-            
             <button
               onClick={handleSignOut}
               className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md"

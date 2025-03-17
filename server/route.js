@@ -5,7 +5,7 @@ const { getConnectedClient } = require("./database");
 const { ObjectId } = require("mongodb");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("./authMiddleware");
-const { updateStreak } = require('./streakservice');
+const { updateStreak } = require("./streakservice");
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -46,7 +46,7 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
       username: safeUsername,
       createdAt,
-      streak: { 
+      streak: {
         count: 0,
       },
     });
@@ -240,7 +240,7 @@ router.post("/journals", async (req, res) => {
       status: false,
       isFavourite: false,
       _id: newJournal.insertedId,
-      streak: newStreakCount
+      streak: newStreakCount,
     });
   } catch (error) {
     console.error("Journal creation error:", error);
@@ -286,26 +286,27 @@ router.patch("/favourite/:id", authMiddleware, async (req, res) => {
   const userId = req.user.id; // This should now be a string
 
   try {
-    const existingJournal = await collection.findOne({ 
-      _id: new ObjectId(journalId), 
-      userId: userId // String comparison
+    const existingJournal = await collection.findOne({
+      _id: new ObjectId(journalId),
+      userId: userId, // String comparison
     });
 
     if (!existingJournal) {
-      
       return res.status(404).json({ error: "Journal not found" });
     }
 
     const result = await collection.updateOne(
-      { 
-        _id: new ObjectId(journalId), 
-        userId: userId 
+      {
+        _id: new ObjectId(journalId),
+        userId: userId,
       },
       { $set: updates }
     );
 
     if (result.matchedCount === 1) {
-      const updatedJournal = await collection.findOne({ _id: new ObjectId(journalId) });
+      const updatedJournal = await collection.findOne({
+        _id: new ObjectId(journalId),
+      });
       res.status(200).json({
         message: "Journal updated successfully",
         journal: updatedJournal,
@@ -367,45 +368,44 @@ router.patch("/delete/:id", authMiddleware, async (req, res) => {
 
     // Find and update the journal, ensuring it belongs to the authenticated user
     const result = await collection.updateOne(
-      { 
-        _id: objectId, 
-        userId: userId // Ensure the journal belongs to the current user
+      {
+        _id: objectId,
+        userId: userId, // Ensure the journal belongs to the current user
       },
-      { 
-        $set: { 
+      {
+        $set: {
           isHidden: true,
-          deletedAt: new Date() 
-        } 
+          deletedAt: new Date(),
+        },
       }
     );
 
     // Check if the journal was actually updated
     if (result.matchedCount === 0) {
-      return res.status(404).json({ 
-        error: "Journal not found or you do not have permission to delete" 
+      return res.status(404).json({
+        error: "Journal not found or you do not have permission to delete",
       });
     }
 
     // Fetch the updated journal to return
-    const updatedJournal = await collection.findOne({ 
-      _id: objectId 
+    const updatedJournal = await collection.findOne({
+      _id: objectId,
     });
 
     res.status(200).json({
       message: "Journal deleted successfully",
-      journal: updatedJournal
+      journal: updatedJournal,
     });
-
   } catch (error) {
-    if (error.message.includes('ObjectId')) {
-      return res.status(400).json({ 
-        error: "Invalid journal ID format" 
+    if (error.message.includes("ObjectId")) {
+      return res.status(400).json({
+        error: "Invalid journal ID format",
       });
     }
     console.error("Error soft deleting journal:", error);
-    res.status(500).json({ 
-      error: "Internal server error", 
-      message: error.message 
+    res.status(500).json({
+      error: "Internal server error",
+      message: error.message,
     });
   }
 });
@@ -415,36 +415,36 @@ router.patch("/edit/:id", async (req, res) => {
   try {
     const id = req.params.id;
     const { title, content, isFavourite, status } = req.body;
-    
+
     if (!id) {
       return res.status(400).json({ error: "Journal ID is required" });
     }
 
     const collection = getJournalCollection();
-    
+
     // Create update data object
     const updateData = {};
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
     if (isFavourite !== undefined) updateData.isFavourite = isFavourite;
     if (status !== undefined) updateData.status = status;
-    
+
     // Add last edited date
     const updatedAt = new Date();
     updateData.updatedAt = updatedAt;
-    
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
       { $set: updateData }
     );
-    
+
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "Journal not found" });
     }
-    
+
     // Get the updated journal to return to the client
     const updatedJournal = await collection.findOne({ _id: new ObjectId(id) });
-    
+
     res.status(200).json(updatedJournal);
   } catch (error) {
     console.error("Error updating journal:", error);
@@ -459,19 +459,22 @@ router.patch("/edit/:id", async (req, res) => {
 router.get("/journal/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    
+
     if (!id) {
       return res.status(400).json({ error: "Journal ID is required" });
     }
 
     const collection = getJournalCollection();
-    
-    const journal = await collection.findOne({ _id: new ObjectId(id), isHidden: false });
-    
+
+    const journal = await collection.findOne({
+      _id: new ObjectId(id),
+      isHidden: false,
+    });
+
     if (!journal) {
       return res.status(404).json({ error: "Journal not found" });
     }
-    
+
     res.status(200).json({
       _id: journal._id,
       title: journal.title,
@@ -488,7 +491,6 @@ router.get("/journal/:id", async (req, res) => {
     });
   }
 });
-
 
 // Get current streak
 router.get("/streak", authMiddleware, async (req, res) => {
@@ -512,14 +514,14 @@ router.get("/streak", authMiddleware, async (req, res) => {
 });
 
 //get user personal information
-router.get("/profile/:id", authMiddleware, async (req,res) => {
+router.get("/profile/:id", authMiddleware, async (req, res) => {
   try {
     const usersCollection = getUserCollection();
     const userId = req.params.id;
 
     const objectId = new ObjectId(userId);
 
-    const user = await usersCollection.findOne({_id:objectId});
+    const user = await usersCollection.findOne({ _id: objectId });
 
     if (!user) {
       return res.status(404).json({ error: "User not found" });
@@ -537,27 +539,31 @@ router.get("/profile/:id", authMiddleware, async (req,res) => {
   }
 });
 
-
 //update profile details
 router.patch("/update-profile", authMiddleware, async (req, res) => {
-  try{
+  try {
     const usersCollection = getUserCollection();
     const userId = req.user.id;
-    const {username, email} = req.body;
+    const { username, email } = req.body;
 
     const updateData = {};
     if (username !== undefined) updateData.username = username;
     if (email !== undefined) updateData.email = email;
 
-    const result = usersCollection.updateOne({_id: new ObjectId(userId)}, {$set: updateData});
+    const result = usersCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: updateData }
+    );
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ error: "User not found" });
     }
-    
+
     // Get the updated data to return to the client
-    const updatedDetails = await usersCollection.findOne({ _id: new ObjectId(userId) });
-    
+    const updatedDetails = await usersCollection.findOne({
+      _id: new ObjectId(userId),
+    });
+
     res.status(200).json(updatedDetails);
   } catch (error) {
     console.error("failed to update details", error);
@@ -569,60 +575,60 @@ router.patch("/update-profile", authMiddleware, async (req, res) => {
 });
 
 // User routes
-router.get('/api/users/check', async (req, res) => {
+router.get("/api/users/check", async (req, res) => {
   try {
     const { email } = req.query;
-    
+
     if (!email) {
-      return res.status(400).json({ message: 'Email is required' });
+      return res.status(400).json({ message: "Email is required" });
     }
-    
-    const user = await db.collection('users').findOne({ email });
-    
+
+    const user = await db.collection("users").findOne({ email });
+
     if (user) {
-      return res.json({ 
-        id: user._id.toString(), 
+      return res.json({
+        id: user._id.toString(),
         email: user.email,
-        exists: true 
+        exists: true,
       });
     } else {
       return res.json({ exists: false });
     }
   } catch (error) {
-    console.error('User check error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("User check error:", error);
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-router.post('/api/users/oauth', async (req, res) => {
+router.post("/api/users/oauth", async (req, res) => {
   try {
     const { email, name, provider, providerId } = req.body;
-    
+
     // Validate required fields
     if (!email || !provider || !providerId) {
-      return res.status(400).json({ message: 'Missing required fields' });
+      return res.status(400).json({ message: "Missing required fields" });
     }
-    
+
     // Check if user already exists
-    const usersCollection = db.collection('users');
+    const usersCollection = db.collection("users");
     let user = await usersCollection.findOne({ email });
-    
+
     if (user) {
       // Update existing user with OAuth info if needed
       const providers = user.providers || [];
       const providerIds = user.providerId || {};
-      
+
       if (!providers.includes(provider)) {
         providers.push(provider);
         providerIds[provider] = providerId;
-        
+
         await usersCollection.updateOne(
           { _id: user._id },
-          { 
-            $set: { 
+          {
+            $set: {
               providers: providers,
-              providerId: providerIds
-            } 
+              providerId: providerIds,
+            },
           }
         );
       }
@@ -630,26 +636,64 @@ router.post('/api/users/oauth', async (req, res) => {
       // Create a new user
       const result = await usersCollection.insertOne({
         email,
-        username: name || email.split('@')[0], // Use name or generate username from email
+        username: name || email.split("@")[0], // Use name or generate username from email
         providers: [provider],
         providerId: { [provider]: providerId },
-        createdAt: new Date()
+        createdAt: new Date(),
       });
-      
+
       user = {
         _id: result.insertedId,
         email,
-        username: name || email.split('@')[0]
+        username: name || email.split("@")[0],
       };
     }
-    
+
     res.status(201).json({
       id: user._id.toString(),
       email: user.email,
-      username: user.username
+      username: user.username,
     });
   } catch (error) {
-    console.error('OAuth user creation error:', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error("OAuth user creation error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+router.patch("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const usersCollection = getUserCollection();
+    const userId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ error: "Current password and new password are required" });
+    }
+
+    const objectId = new ObjectId(userId)
+    const user = await usersCollection.findOne({ _id: objectId });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await usersCollection.updateOne(
+      { _id: objectId },
+      { $set: { password: hashedPassword } }
+    );
+    return res.status(200).json({ message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Error changing password:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
