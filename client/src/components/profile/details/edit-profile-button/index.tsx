@@ -36,7 +36,6 @@ export function EditProfileButton({
     setError("");
 
     try {
-      // Send the update request to your API
       const response = await fetch("http://localhost:4000/api/update-profile", {
         method: "PATCH",
         headers: {
@@ -55,11 +54,9 @@ export function EditProfileButton({
         throw new Error(data.error || "Failed to update profile");
       }
 
-      // Set success state
       setUpdateSuccess(true);
       setIsEditing(false);
 
-      // Wait a moment before refreshing to allow session update to complete
       setTimeout(() => {
         router.refresh();
       }, 500);
@@ -78,7 +75,6 @@ export function EditProfileButton({
   };
 
   const handleCancel = () => {
-    // Reset form values to original values
     setUsername(initialUsername);
     setEmail(initialEmail);
     setIsEditing(false);

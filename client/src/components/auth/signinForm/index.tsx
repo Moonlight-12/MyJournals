@@ -40,9 +40,9 @@ export default function SigninForm() {
     setIsLoading(true)
 
     try {
-      // Remove the extra provider parameter - it's not needed and could cause issues
+      
       await signIn("github", { callbackUrl: "/next-home" })
-      // Note: No need to redirect manually, NextAuth will handle it
+      
     } catch (error) {
       console.error("GitHub sign-in error:", error)
       setIsLoading(false)

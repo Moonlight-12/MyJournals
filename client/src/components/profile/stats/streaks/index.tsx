@@ -62,8 +62,6 @@ export default function DisplayStreaks() {
         Error loading streak: {error}
       </div>
     );
-
-  // Get milestone styles based on streak count
   const getMilestoneStyles = () => {
     if (streak >= 100) {
       return "milestone-legendary";

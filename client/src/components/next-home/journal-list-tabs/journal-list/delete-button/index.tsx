@@ -39,7 +39,7 @@ export default function DeleteButton({
             headers: {
               Authorization: `Bearer ${session.accessToken}`,
             },
-            cache: 'no-store', // Prevent caching
+            cache: 'no-store', 
           }
         );
 
@@ -50,12 +50,12 @@ export default function DeleteButton({
           );
         }
 
-        // Call the success callback if provided
+        
         if (onDeleteSuccess) {
           onDeleteSuccess();
         }
         
-        // Force a complete refresh of the current page
+        
         router.refresh();
         
       } catch (err) {

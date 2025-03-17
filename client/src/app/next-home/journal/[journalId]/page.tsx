@@ -46,7 +46,7 @@ export default function JournalPage() {
         setContent(data.content);
       } else {
         console.error('Journal not found. Status:', response.status);
-        // Try to get error details if available
+    
         try {
           const errorData = await response.json();
           console.error('Error details:', errorData);
@@ -85,7 +85,7 @@ export default function JournalPage() {
           const updatedJournal = await response.json();
           console.log('Journal updated successfully:', updatedJournal);
           
-          // Update with the returned data from server
+          
           setJournal(updatedJournal);
           setTitle(updatedJournal.title);
           setContent(updatedJournal.content);
@@ -101,7 +101,7 @@ export default function JournalPage() {
             console.error('No error details available');
             setError('Failed to save changes');
           }
-          // Stay in editing mode if save failed
+          
           return;
         }
       } catch (error) {
@@ -112,7 +112,7 @@ export default function JournalPage() {
         setIsSaving(false);
       }
     } else {
-      // Enter edit mode
+      
       setIsEditing(true);
     }
   };

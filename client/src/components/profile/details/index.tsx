@@ -3,7 +3,6 @@ import { options } from "@/app/api/auth/[...nextauth]/options";
 import { EditProfileButton } from "./edit-profile-button";
 import { ChangePasswordButton } from "./change-password-button";
 
-// Define types for TypeScript support
 interface User {
   id: string;
   username?: string;
@@ -26,8 +25,6 @@ export async function ProfileDetails() {
   if (!session?.user?.id) {
     throw new Error("Please Login first");
   }
-
-  // Ensure we have valid string values for the props
   const userEmail = session.user.email || "";
   const userName = session.user.name || "";
 
