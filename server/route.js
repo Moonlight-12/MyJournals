@@ -144,7 +144,7 @@ router.get("/journals", async (req, res) => {
       query.isFavourite = isFavourite === "true";
     }
 
-    const journals = await collection.find(query).toArray();
+    const journals = await collection.find(query).sort({ createdAt: -1 }).toArray();
 
     const result = journals.map((journal) => ({
       _id: journal._id,

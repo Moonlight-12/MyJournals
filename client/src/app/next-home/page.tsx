@@ -19,10 +19,10 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="w-screen min-h-screen bg-gradient-to-b from-white to-[#87CEEB] text-black">
+    <main className="w-screen min-h-screen ">
       <Header />
 
-      <div className="flex flex-col items-center text-2xl p-12 w-full mt-18">
+      <div className="flex flex-col items-center text-2xl p-32 w-full mt-18 ">
         <h2>Welcome to your personal journal</h2>
         <h1 className="text-3xl mb-12">
           Hi {session.user.name || session.user.email}
@@ -37,11 +37,11 @@ export default async function HomePage() {
       </div>
 
       <section className="max-w-screen-xl mx-auto w-full px-4 pb-10">
-        <div className="space-y-4 pb-4 overflow-hidden">
+        <div className="mb-12 overflow-hidden">
           <RecentJournalComponent />
         </div>
 
-        <div className="px-4">
+        <div className="px-4 ">
           <JournalsListTabs />
         </div>
       </section>

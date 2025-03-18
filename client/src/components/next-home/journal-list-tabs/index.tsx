@@ -18,7 +18,7 @@ export function JournalsListTabs() {
       className="w-full mb-10"
       onValueChange={handleTabChange}
     >
-      <TabsList className="flex shrink-0 border rounded-md mb-8 py-6">
+      <TabsList className="flex shrink-0 border rounded-md mb-8 py-6 ">
         <TabsTrigger
           value="Journal list"
           className="data-[state=active]:bg-white rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px]"
@@ -34,13 +34,13 @@ export function JournalsListTabs() {
       </TabsList>
       <TabsContent
         value="Journal list"
-        className="overflow-y-auto h-[400px] md:h-[600px]"
+        className=" bg-[#5ba3bf] rounded-lg p-4"
       >
         <DisplayList />
       </TabsContent>
       <TabsContent
         value="Favourite Journal"
-        className="overflow-y-auto h-[400px] md:h-[600px]"
+        className=" bg-[#5ba3bf] rounded-lg p-4"
       >
         <FavouriteList key={refreshKey} />
       </TabsContent>

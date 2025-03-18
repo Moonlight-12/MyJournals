@@ -130,7 +130,7 @@ export default function JournalPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-start bg-[#FBF5DD] min-h-screen text-[#16404D] p-4">
+    <div className="flex flex-col items-center justify-start  p-4">
       <div className="w-full max-w-screen-md">
         {error && <div className="bg-red-100 text-red-700 p-2 mb-4 rounded">{error}</div>}
         
