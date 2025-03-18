@@ -20,7 +20,7 @@ export default async function AccountAge() {
   return (
     <div className="text-center">
       <div className="p-4">
-        <span className="text-2xl font-bold">{diffDays}</span>
+        <span className="text-2xl font-bold text-neutral-700">{diffDays}</span>
         <span className="text-xs block text-gray-500">days</span>
       </div>
       <p className="text-sm text-gray-500 mt-4">Keep up the good work!</p>
