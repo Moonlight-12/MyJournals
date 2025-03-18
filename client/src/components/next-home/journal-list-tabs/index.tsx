@@ -21,26 +21,26 @@ export function JournalsListTabs() {
       <TabsList className="flex shrink-0 border rounded-md mb-8 py-6 ">
         <TabsTrigger
           value="Journal list"
-          className="data-[state=active]:bg-white rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px]"
+          className="data-[state=active]:bg-[#2973B2] rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px] text-black"
         >
           Journal list
         </TabsTrigger>
         <TabsTrigger
           value="Favourite Journal"
-          className="data-[state=active]:bg-white rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px]"
+          className="data-[state=active]:bg-[#2973B2] rounded-md data-[state=active]:shadow-md transition-all text-lg flex flex-1 h-[45px] "
         >
           Favourite Journal
         </TabsTrigger>
       </TabsList>
       <TabsContent
         value="Journal list"
-        className=" bg-[#5ba3bf] rounded-lg p-4"
+        className=" bg-[#2973B2] rounded-lg p-4"
       >
         <DisplayList />
       </TabsContent>
       <TabsContent
         value="Favourite Journal"
-        className=" bg-[#5ba3bf] rounded-lg p-4"
+        className=" bg-[#2973B2] rounded-lg p-4"
       >
         <FavouriteList key={refreshKey} />
       </TabsContent>

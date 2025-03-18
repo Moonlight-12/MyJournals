@@ -9,8 +9,8 @@ export function StartWritingButton() {
   return (
     <>
       <Button
-        variant="outline"
-        className="border border-slate-300 px-6 py-4"
+        variant="destructive"
+        className="border border-slate-300 px-6 py-4 bg-[#2973B2]"
         onClick={() => {
           setShowJournalModal(true);
         }}

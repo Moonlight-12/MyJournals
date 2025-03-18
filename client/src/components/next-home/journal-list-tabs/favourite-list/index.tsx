@@ -123,7 +123,7 @@ export function FavouriteList() {
 
   if (!favourites.length) {
     return (
-      <div className="p-4 text-center text-gray-600">
+      <div className="p-4 text-center text-white">
         No favorite journals found.
       </div>
     );
