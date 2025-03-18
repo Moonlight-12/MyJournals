@@ -28,6 +28,7 @@ export default async function HomePage() {
         <h1 className="text-3xl mb-12">
           Hi {session.user.name || session.user.email}
         </h1>
+
         <StartWritingButton />
       </div>
 

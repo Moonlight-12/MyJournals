@@ -28,7 +28,7 @@ export function RecentJournalCard({
           </div>
         </div>
 
-        <div className="absolute top-0 left-0 w-full h-full bg-blue-300 p-6 overflow-y-auto rounded-md transition-opacity duration-500 opacity-0 group-hover:opacity-100">
+        <div className="absolute top-0 left-0 w-full h-full bg-blue-300 p-6 overflow-y-auto rounded-md transition-opacity duration-500 opacity-0 group-hover:opacity-100 text-black">
           {content}
         </div>
       </div>

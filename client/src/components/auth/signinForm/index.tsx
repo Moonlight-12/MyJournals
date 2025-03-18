@@ -63,23 +63,23 @@ export default function SigninForm() {
   return (
     <div className="grid place-items-center h-screen">
       <div className="rounded-md  p-4 shadow-lg ">
-        <div className="text-lg font-semibold my-4">Signin</div>
+        <div className="text-lg font-semibold my-4 text-">Signin</div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="Email"
-            className="rounded bg-white"
+            className="rounded bg-white text-black"
           />
           <input
             onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
-            className="rounded bg-white"
+            className="rounded bg-white text-black"
           />
           <button
             type="submit"
-            className="border bg-[#48A6A7]/90 py-2 cursor-pointer"
+            className="border bg-[#2973B2]/90 py-2 cursor-pointer"
           >
             Signin
           </button>

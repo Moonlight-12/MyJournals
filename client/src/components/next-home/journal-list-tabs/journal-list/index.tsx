@@ -136,7 +136,7 @@ export default function DisplayList() {
 
   if (!journals.length) {
     return (
-      <div className="p-4 text-center text-gray-600">
+      <div className="p-4 text-center text-white">
         No journals found. Start writing your first journal!
       </div>
     );
