@@ -1,67 +1,73 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import Link from "next/link"
-import { useState } from "react"
-import { signIn } from "next-auth/react"
-import { useRouter } from "next/navigation"
+import Link from "next/link";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function SigninForm() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const router = useRouter()
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     try {
       const response = await signIn("credentials", {
         email,
         password,
         redirect: false,
-      })
+      });
 
       if (response?.error) {
-        setError("invalid credentials")
-        return
+        setError("invalid credentials");
+        return;
       }
-      router.replace("next-home")
+      router.replace("next-home");
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   const handleGitHubSignIn = async (e: React.MouseEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
     try {
-      
-      await signIn("github", { callbackUrl: "/next-home" })
-      
+      await signIn("github", { callbackUrl: "/next-home" });
     } catch (error) {
-      console.error("GitHub sign-in error:", error)
-      setIsLoading(false)
+      console.error("GitHub sign-in error:", error);
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="grid place-items-center h-screen">
-      <div className="rounded-md border-[#48A6A7] p-4 shadow-lg border-t-4">
+      <div className="rounded-md  p-4 shadow-lg ">
         <div className="text-lg font-semibold my-4">Signin</div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input onChange={(e) => setEmail(e.target.value)} type="email" placeholder="Email" className="rounded" />
+          <input
+            onChange={(e) => setEmail(e.target.value)}
+            type="email"
+            placeholder="Email"
+            className="rounded bg-white"
+          />
           <input
             onChange={(e) => setPassword(e.target.value)}
             type="password"
             placeholder="Password"
-            className="rounded"
+            className="rounded bg-white"
           />
-          <button type="submit" className="border bg-[#48A6A7]/90 py-2 cursor-pointer">
+          <button
+            type="submit"
+            className="border bg-[#48A6A7]/90 py-2 cursor-pointer"
+          >
             Signin
           </button>
           <div className="flex items-center my-2">
@@ -91,11 +97,19 @@ export default function SigninForm() {
             type="button"
             className="w-full bg-neutral-100 text-black py-2 rounded flex items-center justify-center"
           >
-            <img src="/google-icon.svg" alt="GitHub Logo" className="w-6 h-6 mr-2" />
+            <img
+              src="/google-icon.svg"
+              alt="GitHub Logo"
+              className="w-6 h-6 mr-2"
+            />
             Sign in with Google
           </button>
 
-          {error && <div className="bg-red-500 w-fit text-sm py-1 px-3 rounded-md text-white mt-2">{error}</div>}
+          {error && (
+            <div className="bg-red-500 w-fit text-sm py-1 px-3 rounded-md text-white mt-2">
+              {error}
+            </div>
+          )}
 
           <Link className="text-sm mt-3 text-right" href={"/signup"}>
             Don't have an account? <span className="underline">Signup</span>
@@ -103,5 +117,5 @@ export default function SigninForm() {
         </form>
       </div>
     </div>
-  )
+  );
 }
