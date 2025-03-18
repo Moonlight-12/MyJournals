@@ -6,6 +6,7 @@ import { options } from "../api/auth/[...nextauth]/options";
 import { Button } from "@/components/ui/button";
 import DisplayStreaks from "@/components/profile/stats/streaks";
 import { Header } from "@/components/header";
+import { StartWritingButton } from "@/components/next-home/start-writing-button";
 
 export default async function HomePage() {
   const session = await getServerSession(options);
@@ -27,9 +28,7 @@ export default async function HomePage() {
         <h1 className="text-3xl mb-12">
           Hi {session.user.name || session.user.email}
         </h1>
-        <Button variant="outline" className="border border-slate-300 px-6 py-4">
-          Start Writing
-        </Button>
+        <StartWritingButton />
       </div>
 
       <div className="p-4 mb-4">
