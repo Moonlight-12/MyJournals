@@ -45,7 +45,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen w-full `}
       >
-        <div className="w-screen min-h-screen">
+        <div className="w-screen min-h-screen bg-gradient-to-b from-white to-[#87CEEB] text-black">
           <AuthProvider>{children}</AuthProvider>
         </div>
         

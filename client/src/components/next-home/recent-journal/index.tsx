@@ -21,11 +21,11 @@ export async function RecentJournalComponent({
 
   return (
     <div className={cn(" max-w-screen-xl mx-auto", className)}>
-      <div className="container bg-[#2973B2] text-white rounded-md mb-4 mt-4 py-4 px-2">
+      <div className="container bg-[#2973B2] text-white rounded-md mt-4 py-4 px-2">
         <h2 className="text-2xl font-semibold">Recent Journal</h2>
       </div>
-
-      <RecentCarousel data={data} />
+      
+      <RecentCarousel data={data} className="bg-[#71b8d5] rounded-md"/>
     </div>
   );
 }

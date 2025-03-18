@@ -134,14 +134,14 @@ export function FavouriteList() {
       {favourites.map((journal) => (
         <div
           key={journal._id}
-          className="relative h-64 bg-white rounded-lg shadow-md "
+          className="relative h-64 bg-white rounded-lg shadow-md overflow-hidden"
         >
           <DeleteButton
             journalId={journal._id}
             className="absolute top-2 right-2 z-10"
             onDeleteSuccess={() => handleDeleteSuccess(journal._id)}
           />
-          <Link href={`/next-home/journal/${journal._id}`}>
+          <Link href={`/next-home/journal/${journal._id}`} className="block h-full">
             <div className="h-full p-6 flex flex-col justify-between hover:bg-slate-50">
               <div className="flex-1 overflow-hidden">
                 <h3 className="text-xl font-semibold mb-2">
