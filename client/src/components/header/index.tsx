@@ -14,7 +14,7 @@ export function Header({
     <header
       className={cn(
         className,
-        "bg-white px-4 py-2 flex items-center"
+        "px-4 py-2 flex items-center"
       )}
     >
       
@@ -23,7 +23,7 @@ export function Header({
       </div>
       
       <div className="flex-grow flex justify-center">
-        <h1 className="text-2xl font-semibold">
+        <h1 className="text-4xl font-bold">
           {title || "MyJournal"}
         </h1>
       </div>

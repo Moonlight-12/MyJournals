@@ -167,7 +167,7 @@ router.get("/journals", async (req, res) => {
 
 router.post("/journals", async (req, res) => {
   const collection = getJournalCollection();
-  const { title, content, userId, testDate } = req.body; // Add testDate parameter
+  const { title, content, userId} = req.body;
   console.log("User ID from request:", req.body.userId);
   const currentDate = new Date();
 
@@ -189,9 +189,7 @@ router.post("/journals", async (req, res) => {
       updatedAt: currentDate,
     });
 
-    // Update streak after successfully creating journal
-    // Pass the testDate if it exists
-    const newStreakCount = await updateStreak(userId, testDate);
+    const newStreakCount = await updateStreak(userId, currentDate);
 
     res.status(200).json({
       success: true,

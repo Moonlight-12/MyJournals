@@ -19,7 +19,7 @@ export default async function HomePage() {
   }
 
   return (
-    <main className="w-screen min-h-screen bg-[#FBF5DD] text-[#16404D]">
+    <main className="w-screen min-h-screen bg-gradient-to-b from-white to-[#87CEEB] text-black">
       <Header />
 
       <div className="flex flex-col items-center text-2xl p-12 w-full mt-18">
