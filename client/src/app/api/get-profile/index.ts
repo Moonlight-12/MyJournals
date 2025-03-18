@@ -1,17 +1,19 @@
 import { getServerSession } from "next-auth";
 import { options } from "../auth/[...nextauth]/options";
 import { user } from "@/types/user";
+import { redirect } from "next/navigation";
 
 export async function getProfile(userId: string): Promise<user> {
   const session = await getServerSession(options);
 
   if (!session || !session.accessToken) {
-    throw new Error("No authentication token available");
+    redirect("/signin");
   }
 
   if (session.user.id !== userId) {
     throw new Error("Access denied");
   }
+  
 
   try {
     const response = await fetch(
@@ -26,7 +28,7 @@ export async function getProfile(userId: string): Promise<user> {
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP Error Status: ${response.status}`);
+      redirect("/signin");
     }
 
     return response.json();
