@@ -74,11 +74,11 @@ router.post("/auth/signin", async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "5h" }
+      { expiresIn: "5s" }
     );
   };
 
-  if (provider === "github") {
+  if (provider === "github" || provider === "google") {
     let user = await users.findOne({ email });
 
     if (!user) {
@@ -86,13 +86,12 @@ router.post("/auth/signin", async (req, res) => {
         email,
         username: name,
         createdAt: new Date(),
-        provider: "github",
+        provider: provider,
       });
 
       user = await users.findOne({ _id: result.insertedId });
     }
 
-    // Generate token for GitHub login
     const token = generateToken(user);
 
     return res.status(200).json({
@@ -100,7 +99,7 @@ router.post("/auth/signin", async (req, res) => {
       email: user.email,
       username: user.username,
       createdAt: user.createdAt,
-      token, // Send JWT token
+      token, 
     });
   }
 

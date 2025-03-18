@@ -12,6 +12,7 @@ export default function SigninForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [googleIsLoading, setGoogleIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -44,6 +45,18 @@ export default function SigninForm() {
     } catch (error) {
       console.error("GitHub sign-in error:", error);
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    setGoogleIsLoading(true);
+
+    try {
+      await signIn("google", { callbackUrl: "/next-home" });
+    } catch (error) {
+      console.error("Google sign-in error", error);
+      setGoogleIsLoading(false);
     }
   };
 
@@ -94,15 +107,22 @@ export default function SigninForm() {
 
           {/* not working yet, need to provide credentials in auth nextJS */}
           <button
-            type="button"
+            disabled={googleIsLoading}
             className="w-full bg-neutral-100 text-black py-2 rounded flex items-center justify-center"
+            onClick={handleGoogleSignIn}
           >
-            <img
-              src="/google-icon.svg"
-              alt="GitHub Logo"
-              className="w-6 h-6 mr-2"
-            />
-            Sign in with Google
+            {googleIsLoading ? (
+              <span>Loading...</span>
+            ) : (
+              <>
+                <img
+                  src="/google-icon.svg"
+                  alt="GitHub Logo"
+                  className="w-6 h-6 mr-2"
+                />
+                Sign in with Google
+              </>
+            )}
           </button>
 
           {error && (

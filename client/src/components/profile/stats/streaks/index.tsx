@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function DisplayStreaks() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [streak, setStreak] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -13,13 +15,14 @@ export default function DisplayStreaks() {
     if (status === "authenticated" && session?.user?.id) {
       getStreak();
     } else if (status === "unauthenticated") {
+      router.push("/signin");
       setLoading(false);
     }
-  }, [status, session]);
+  }, [status, session, router]);
 
   const getStreak = async () => {
     if (!session?.user?.id || !session?.accessToken) {
-      setError("No user ID or access token");
+      router.push("/signin");
       setLoading(false);
       return;
     }
@@ -35,16 +38,17 @@ export default function DisplayStreaks() {
       });
 
       if (!response.ok) {
-        const errorBody = await response.text();
-        console.error(`Error response: ${response.status}`, errorBody);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.error(`API error: ${response.status}`);
+        router.push("/signin");
+        return;
       }
 
       const data = await response.json();
       setStreak(data.streak);
     } catch (error) {
-      console.error("Error in getStreak", error);
-      setError(error instanceof Error ? error.message : String(error));
+      console.error("Failed to fetch streak:", error);
+      setError("Failed to load streak data");
+      router.push("/signin");
     } finally {
       setLoading(false);
     }
@@ -62,6 +66,7 @@ export default function DisplayStreaks() {
         Error loading streak: {error}
       </div>
     );
+
   const getMilestoneStyles = () => {
     if (streak >= 100) {
       return "milestone-legendary";
