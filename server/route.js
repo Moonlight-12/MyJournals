@@ -74,7 +74,7 @@ router.post("/auth/signin", async (req, res) => {
         email: user.email,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "5s" }
+      { expiresIn: "5h" }
     );
   };
 
