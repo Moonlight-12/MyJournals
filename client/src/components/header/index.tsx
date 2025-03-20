@@ -5,10 +5,12 @@ export function Header({
   title,
   className,
   signOut,
+  icon,
 }: {
   title?: string;
   className?: string;
   signOut?: boolean;
+  icon?: boolean;
 }) {
   return (
     <header
@@ -19,6 +21,9 @@ export function Header({
     >
       
       <div className="w-20 flex justify-start">
+        {icon && (
+          <img src="/icon.svg" alt="Icon" />
+        )}
       
       </div>
       
