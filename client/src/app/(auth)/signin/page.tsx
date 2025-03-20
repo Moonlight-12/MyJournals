@@ -1,11 +1,10 @@
 import SigninForm from "@/components/auth/signinForm";
+import { Header } from "@/components/header";
 
 export default function SignIn() {
   return (
     <main className="min-h-screen">
-      <header className="flex items-center justify-center h-12">
-        <h1>Journal</h1>
-      </header>
+      <Header icon={true}/>
       <SigninForm />
     </main>
   );

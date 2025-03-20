@@ -21,7 +21,7 @@ export default async function HomePage() {
 
   return (
     <main className="w-screen min-h-screen ">
-      <Header />
+      <Header icon={true}/>
 
       <div className="flex flex-col items-center text-2xl p-32 w-full mt-18 ">
         <h2>Welcome to your personal journal</h2>
