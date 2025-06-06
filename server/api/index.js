@@ -7,9 +7,10 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-  origin: process.env.NODE_ENV === "production" 
-    ? ["https://my-journals-frontend.vercel.app/"]
-    : "http://localhost:3000"
+  origin: "*", // Allow all origins temporarily for debugging
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
 }));
 
 // Connect to MongoDB
