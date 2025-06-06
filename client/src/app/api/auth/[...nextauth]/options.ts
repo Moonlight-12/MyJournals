@@ -27,6 +27,13 @@ export const options: NextAuthOptions = {
         }
         
         const API_URL = process.env.NEXT_PUBLIC_APP_API_URL || "http://localhost:4000"
+
+        // Debug logs
+  console.log('=== NextAuth Debug ===');
+  console.log('API_URL:', API_URL);
+  console.log('Full URL:', `${API_URL}/api/auth/signin`);
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('===================');
         
         try {
           const response = await fetch(`${API_URL}/api/auth/signin`, {
