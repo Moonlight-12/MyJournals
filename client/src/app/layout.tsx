@@ -45,7 +45,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen w-full `}
       >
-        <div className="w-screen min-h-screen bg-[url('/wood-cartoon.jpg')] bg-cover bg-center text-white">
+        <div className="w-screen min-h-screen bg-slate-800 text-white">
+
           <AuthProvider>{children}</AuthProvider>
         </div>
         

@@ -25,7 +25,7 @@ export async function RecentJournalComponent({
         <h2 className="text-2xl font-semibold">Recent Journal</h2>
       </div>
       
-      <RecentCarousel data={data} className="bg-[url('/wooden2.jpg')] bg-cover bg-center rounded-md"/>
+      <RecentCarousel data={data} className=" rounded-md"/>
     </div>
   );
 }
