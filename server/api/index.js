@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: process.env.NODE_ENV === "production" 
-    ? ["https://yourdomain.com", "https://your-frontend-vercel-url.vercel.app"]
+    ? ["https://my-journals-frontend.vercel.app/"]
     : "http://localhost:3000"
 }));
 
