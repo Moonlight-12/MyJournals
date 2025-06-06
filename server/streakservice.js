@@ -1,5 +1,5 @@
-const { getDb } = require("./database");
-const { ObjectId } = require("mongodb");
+import { getDb } from "./database.js";
+import { ObjectId } from "mongodb";
 
 async function updateStreak(userId, testDate = null) {
     const db = getDb();
@@ -64,4 +64,4 @@ async function updateStreak(userId, testDate = null) {
     return streakCount;
 }
 
-module.exports = { updateStreak };
+export { updateStreak };

@@ -1,11 +1,12 @@
-const express = require("express");
-const bcrypt = require("bcryptjs");
+import express from "express";
+import bcrypt from "bcryptjs";
+import { getConnectedClient } from "./database.js";
+import { ObjectId } from "mongodb";
+import jwt from "jsonwebtoken";
+import authMiddleware from "./authMiddleware.js";
+import { updateStreak } from "./streakservice.js";
+
 const router = express.Router();
-const { getConnectedClient } = require("./database");
-const { ObjectId } = require("mongodb");
-const jwt = require("jsonwebtoken");
-const authMiddleware = require("./authMiddleware");
-const { updateStreak } = require("./streakservice");
 
 const getJournalCollection = () => {
   const client = getConnectedClient();
@@ -38,7 +39,6 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: "user already exists" });
     }
 
-    const bcrypt = require("bcryptjs");
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await users.insertOne({
@@ -233,8 +233,6 @@ router.put("/journals/:id", async (req, res) => {
 
   res.status(200).json(updatedJournal);
 });
-
-module.exports = router;
 
 //Make journal a favourite journal by Id
 router.patch("/favourite/:id", authMiddleware, async (req, res) => {
@@ -569,3 +567,5 @@ router.patch("/change-password", authMiddleware, async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
+export default router;
