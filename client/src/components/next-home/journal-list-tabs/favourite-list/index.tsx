@@ -20,7 +20,7 @@ export function FavouriteList() {
       try {
         setIsLoading(true);
         const response = await fetch(
-          `http://localhost:4000/api/journals?userId=${session.user.id}&isFavourite=true&isHidden=false`,
+          `${process.env.APP_API_URL}/api/journals?userId=${session.user.id}&isFavourite=true&isHidden=false`,
           {
             cache: "no-store",
             headers: { "Content-Type": "application/json" },
@@ -66,7 +66,7 @@ export function FavouriteList() {
       );
 
       const response = await fetch(
-        `http://localhost:4000/api/favourite/${journalId}`,
+        `${process.env.APP_API_URL}/api/favourite/${journalId}`,
         {
           method: "PATCH",
           headers: {

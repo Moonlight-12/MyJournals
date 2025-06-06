@@ -40,7 +40,7 @@ export function ChangePasswordButton() {
     try {
       
       const response = await fetch(
-        "http://localhost:4000/api/change-password",
+        `${process.env.APP_API_URL}/api/change-password`,
         {
           method: "PATCH",
           headers: {

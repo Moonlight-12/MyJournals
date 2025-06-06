@@ -36,7 +36,7 @@ export function EditProfileButton({
     setError("");
 
     try {
-      const response = await fetch("http://localhost:4000/api/update-profile", {
+      const response = await fetch(`${process.env.APP_API_URL}/api/update-profile`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

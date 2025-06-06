@@ -1,7 +1,7 @@
 export async function getRecentJournal(userId: string) {
   try {
     const response = await fetch(
-      `http://localhost:4000/api/recents?userId=${userId}`,
+      `${process.env.APP_API_URL}/api/recents?userId=${userId}`,
       {
         cache: "no-store",
         headers: { "Content-type": "application-json" },

@@ -29,7 +29,7 @@ export default function DisplayStreaks() {
 
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:4000/api/streak`, {
+      const response = await fetch(`${process.env.APP_API_URL}/api/streak`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

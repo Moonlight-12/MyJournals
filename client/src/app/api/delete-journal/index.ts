@@ -20,7 +20,7 @@ export async function deleteJournal(journalId: string, userId: string) {
   }
 
   try {
-    const response = await fetch(`http://localhost:4000/api/delete/${journalId}`, {
+    const response = await fetch(`${process.env.APP_API_URL}/api/delete/${journalId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

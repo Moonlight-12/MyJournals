@@ -36,7 +36,7 @@ export default function JournalPage() {
     try {
       setIsLoading(true);
       
-      const response = await fetch(`http://localhost:4000/api/journal/${journalId}`);
+      const response = await fetch(`${process.env.APP_API_URL}/api/journal/${journalId}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -70,7 +70,7 @@ export default function JournalPage() {
         setError(null);
         
         
-        const response = await fetch(`http://localhost:4000/api/edit/${journalId}`, {
+        const response = await fetch(`${process.env.APP_API_URL}/api/edit/${journalId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

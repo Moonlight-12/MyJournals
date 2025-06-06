@@ -14,7 +14,7 @@ async function NewJournal(
   content: string,
   userId: string
 ): Promise<JournalData> {
-  const response = await fetch("http://localhost:4000/api/journals", {
+  const response = await fetch(`${process.env.APP_API_URL}/api/journals`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

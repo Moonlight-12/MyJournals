@@ -27,7 +27,7 @@ export const options: NextAuthOptions = {
         }
 
         try {
-          const response = await fetch("http://localhost:4000/api/auth/signin", {
+          const response = await fetch(`${process.env.APP_API_URL}/api/auth/signin`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(credentials),
@@ -71,7 +71,7 @@ export const options: NextAuthOptions = {
 
         if (account.type === "oauth") {
           try {
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000"
+            const API_URL = process.env.APP_API_URL || "http://localhost:4000"
 
             const signinResponse = await fetch(`${API_URL}/api/auth/signin`, {
               method: "POST",

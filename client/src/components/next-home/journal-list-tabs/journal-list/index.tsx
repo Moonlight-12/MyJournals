@@ -27,7 +27,7 @@ export default function DisplayList() {
         try {
           setIsLoading(true);
           const response = await fetch(
-            `http://localhost:4000/api/journals?userId=${userId}`,
+            `${process.env.APP_API_URL}/api/journals?userId=${userId}`,
             {
               cache: "no-store",
               headers: { "Content-Type": "application/json" },
@@ -77,7 +77,7 @@ export default function DisplayList() {
       );
 
       const response = await fetch(
-        `http://localhost:4000/api/favourite/${journalId}`,
+        `${process.env.APP_API_URL}/api/favourite/${journalId}`,
         {
           method: "PATCH",
           headers: {

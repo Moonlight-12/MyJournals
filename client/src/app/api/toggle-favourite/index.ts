@@ -10,7 +10,7 @@ export async function toggleFavorite(
   }
 
   try {
-    const response = await fetch(`http://localhost:4000/api/favourite/${journalId}`, {
+    const response = await fetch(`${process.env.APP_API_URL}/api/favourite/${journalId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

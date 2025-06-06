@@ -22,7 +22,7 @@ interface SignupResponse {
 async function Signup(data: SignupData): Promise<SignupResponse> {
   const { email, password, username, createdAt } = data;
 
-  const response = await fetch("http://localhost:4000/api/signup", {
+  const response = await fetch(`${process.env.APP_API_URL}/api/signup`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ username, email, password, createdAt }),
