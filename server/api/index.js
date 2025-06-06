@@ -20,6 +20,7 @@ app.use(async (req, res, next) => {
     try {
       await connectToMongoDB();
       isConnected = true;
+      console.log("Connected to MongoDB");
     } catch (error) {
       console.error("Database connection failed:", error);
       return res.status(500).json({ error: "Database connection failed" });
@@ -28,13 +29,27 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Remove the "/api" prefix here - Vercel already handles that routing
-app.use("/", router);
-
-// Add a health check route
+// Root route - for when someone visits your domain directly
 app.get("/", (req, res) => {
-  res.json({ message: "API is running!", timestamp: new Date().toISOString() });
+  res.json({ 
+    message: "MyJournals API is running!", 
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      api: "/api/*"
+    }
+  });
 });
 
-// Export for Vercel serverless functions
+// API routes - handle requests that come with /api prefix stripped
+app.use("/api", router);
+
+// Handle any other routes
+app.use("*", (req, res) => {
+  res.status(404).json({ 
+    error: "Route not found", 
+    path: req.originalUrl,
+    message: "Please check the API documentation for available endpoints" 
+  });
+});
+
 export default app;
