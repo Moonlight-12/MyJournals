@@ -16,8 +16,9 @@ export async function getProfile(userId: string): Promise<user> {
   
 
   try {
+    const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
     const response = await fetch(
-      `${process.env.APP_API_URL}/api/profile/${userId}`,
+      `${API_URL}/api/profile/${userId}`,
       {
         cache: "no-store",
         headers: {

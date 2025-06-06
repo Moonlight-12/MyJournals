@@ -35,8 +35,10 @@ export default function JournalPage() {
   const fetchJournal = async () => {
     try {
       setIsLoading(true);
+
+      const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
       
-      const response = await fetch(`${process.env.APP_API_URL}/api/journal/${journalId}`);
+      const response = await fetch(`${API_URL}/api/journal/${journalId}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -69,8 +71,8 @@ export default function JournalPage() {
         setIsSaving(true);
         setError(null);
         
-        
-        const response = await fetch(`${process.env.APP_API_URL}/api/edit/${journalId}`, {
+        const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
+        const response = await fetch(`${API_URL}/api/edit/${journalId}`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',

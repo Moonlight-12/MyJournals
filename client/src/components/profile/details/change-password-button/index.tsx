@@ -38,9 +38,9 @@ export function ChangePasswordButton() {
     setError("");
 
     try {
-      
+      const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
       const response = await fetch(
-        `${process.env.APP_API_URL}/api/change-password`,
+        `${API_URL}/api/change-password`,
         {
           method: "PATCH",
           headers: {

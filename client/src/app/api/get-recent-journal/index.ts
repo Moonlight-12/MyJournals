@@ -1,7 +1,8 @@
 export async function getRecentJournal(userId: string) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
     const response = await fetch(
-      `${process.env.APP_API_URL}/api/recents?userId=${userId}`,
+      `${API_URL}/api/recents?userId=${userId}`,
       {
         cache: "no-store",
         headers: { "Content-type": "application-json" },

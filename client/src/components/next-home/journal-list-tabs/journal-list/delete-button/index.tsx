@@ -31,9 +31,10 @@ export default function DeleteButton({
         if (!session?.accessToken) {
           throw new Error("Unauthorized: No access token");
         }
+        const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
 
         const response = await fetch(
-          `${process.env.APP_API_URL}/api/delete/${journalId}`,
+          `${API_URL}/api/delete/${journalId}`,
           {
             method: "PATCH",
             headers: {

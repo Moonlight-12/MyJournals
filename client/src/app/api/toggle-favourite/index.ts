@@ -10,7 +10,8 @@ export async function toggleFavorite(
   }
 
   try {
-    const response = await fetch(`${process.env.APP_API_URL}/api/favourite/${journalId}`, {
+    const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
+    const response = await fetch(`${API_URL}/api/favourite/${journalId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

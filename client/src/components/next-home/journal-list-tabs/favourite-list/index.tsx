@@ -19,8 +19,9 @@ export function FavouriteList() {
 
       try {
         setIsLoading(true);
+        const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
         const response = await fetch(
-          `${process.env.APP_API_URL}/api/journals?userId=${session.user.id}&isFavourite=true&isHidden=false`,
+          `${API_URL}/api/journals?userId=${session.user.id}&isFavourite=true&isHidden=false`,
           {
             cache: "no-store",
             headers: { "Content-Type": "application/json" },
@@ -65,8 +66,9 @@ export function FavouriteList() {
         )
       );
 
+      const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
       const response = await fetch(
-        `${process.env.APP_API_URL}/api/favourite/${journalId}`,
+        `${API_URL}/api/favourite/${journalId}`,
         {
           method: "PATCH",
           headers: {

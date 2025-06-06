@@ -13,9 +13,11 @@ export async function getAllJournals(userId: string): Promise<Journal[]> {
     throw new Error("Access denied");
   }
 
+  const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
+
   try {
     const response = await fetch(
-      `${process.env.APP_API_URL}/api/journals?userId=${userId}`,
+      `${API_URL}/api/journals?userId=${userId}`,
       {
         cache: "no-store",
         headers: { 

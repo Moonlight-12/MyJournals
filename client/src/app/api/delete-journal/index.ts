@@ -19,8 +19,10 @@ export async function deleteJournal(journalId: string, userId: string) {
     throw new Error("Unauthorized: Cannot delete another user's journal")
   }
 
+  const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
+
   try {
-    const response = await fetch(`${process.env.APP_API_URL}/api/delete/${journalId}`, {
+    const response = await fetch(`${API_URL}/api/delete/${journalId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

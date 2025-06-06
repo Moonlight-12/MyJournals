@@ -22,7 +22,9 @@ interface SignupResponse {
 async function Signup(data: SignupData): Promise<SignupResponse> {
   const { email, password, username, createdAt } = data;
 
-  const response = await fetch(`${process.env.APP_API_URL}/api/signup`, {
+  const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
+
+  const response = await fetch(`${API_URL}/api/signup`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ username, email, password, createdAt }),

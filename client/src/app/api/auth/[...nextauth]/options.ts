@@ -25,21 +25,27 @@ export const options: NextAuthOptions = {
         if (!credentials || !credentials.email || !credentials.password) {
           return null
         }
-
+        
+        const API_URL = process.env.NEXT_PUBLIC_APP_API_URL || "http://localhost:4000"
+        
         try {
-          const response = await fetch(`${process.env.APP_API_URL}/api/auth/signin`, {
+          const response = await fetch(`${API_URL}/api/auth/signin`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(credentials),
           })
 
           if (!response.ok) {
+            console.error("Credentials signin failed:", response.status, await response.text())
             return null
           }
 
           const user = await response.json()
 
-          if (!user || !user.id) return null
+          if (!user || !user.id) {
+            console.error("Invalid user data received")
+            return null
+          }
 
           return {
             id: user.id,
@@ -48,13 +54,17 @@ export const options: NextAuthOptions = {
             token: user.token ?? null,
           }
         } catch (error) {
+          console.error("Authorization error:", error)
           return null
         }
       },
     }),
   ],
+  
   callbacks: {
     async jwt({ token, user, account }) {
+      const API_URL = process.env.NEXT_PUBLIC_APP_API_URL || "http://localhost:4000"
+      
       // If this is a sign-in
       if (account && user) {
         if (account.type === "credentials" && user.token) {
@@ -71,8 +81,6 @@ export const options: NextAuthOptions = {
 
         if (account.type === "oauth") {
           try {
-            const API_URL = process.env.APP_API_URL || "http://localhost:4000"
-
             const signinResponse = await fetch(`${API_URL}/api/auth/signin`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -84,14 +92,11 @@ export const options: NextAuthOptions = {
             })
 
             if (!signinResponse.ok) {
-              console.error("Error getting token for OAuth user:", await signinResponse.text())
+              console.error("OAuth signin failed:", await signinResponse.text())
               return token
             }
 
             const userData = await signinResponse.json()
-            console.log("Got token for OAuth user:", userData)
-
-            // Decode the token to get the expiration
             const decodedToken = jwt.decode(userData.token) as JwtPayload
 
             return {
@@ -109,11 +114,50 @@ export const options: NextAuthOptions = {
         }
       }
 
-      // For subsequent requests, check if token is expired
-      if (token.exp) {
+      // Token refresh logic (optional)
+      if (token.exp && token.accessToken) {
         const currentTime = Math.floor(Date.now() / 1000)
+        
+        // If token expires in less than 5 minutes, try to refresh
+        if (currentTime > (token.exp as number) - 300) {
+          try {
+            const refreshResponse = await fetch(`${API_URL}/api/auth/refresh`, {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token.accessToken}`
+              },
+              body: JSON.stringify({ token: token.accessToken }),
+            })
+            
+            if (refreshResponse.ok) {
+              const refreshedData = await refreshResponse.json()
+              const decodedToken = jwt.decode(refreshedData.token) as JwtPayload
+              
+              console.log("Token refreshed successfully")
+              return {
+                ...token,
+                accessToken: refreshedData.token,
+                exp: decodedToken?.exp,
+              }
+            } else {
+              console.log("Token refresh failed, clearing token")
+              return {
+                ...token,
+                accessToken: null,
+              }
+            }
+          } catch (error) {
+            console.error("Token refresh error:", error)
+            return {
+              ...token,
+              accessToken: null,
+            }
+          }
+        }
+        
+        // If token is already expired
         if (currentTime > (token.exp as number)) {
-          // Token is expired, clear the accessToken
           console.log("Token expired, clearing accessToken")
           return {
             ...token,
@@ -135,7 +179,7 @@ export const options: NextAuthOptions = {
             name: token.username,
           },
           accessToken: token.accessToken ?? null,
-          exp: token.exp, // Include exp in the session
+          exp: token.exp,
         }
       }
 
@@ -159,4 +203,3 @@ export const options: NextAuthOptions = {
     signIn: "/signin",
   },
 }
-

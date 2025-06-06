@@ -1,7 +1,8 @@
 export async function GetFavourite(userId: string) {
   try {
+    const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
     const response = await fetch(
-      `${process.env.APP_API_URL}/api/journals?userId=${userId}&isFavourite=true`,
+      `${API_URL}/api/journals?userId=${userId}&isFavourite=true`,
       {
         cache: "no-store",
         headers: { "Content-Type": "application/json" },

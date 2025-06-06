@@ -23,8 +23,9 @@ export function useJournals() {
       const fetchJournals = async () => {
         try {
           setIsLoading(true);
+          const API_URL = process.env.NEXT_PUBLIC_APP_API_URL;
           const response = await fetch(
-            `${process.env.APP_API_URL}/api/journals?userId=${userId}`,
+            `${API_URL}/api/journals?userId=${userId}`,
             {
               cache: "no-store",
               headers: { "Content-Type": "application/json" },
